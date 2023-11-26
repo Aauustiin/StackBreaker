@@ -1,2 +1,8 @@
-#ignore .vagrant folder
+# ignore .vagrant folder
 **.vagrant
+
+# ignore .vscode folder
+.vscode
+
+# ignore pylance stuff
+__pycache__
