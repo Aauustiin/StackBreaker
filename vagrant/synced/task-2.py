@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
+import re
 import argparse
 from pathlib import Path
+
 
 parser = argparse.ArgumentParser(
     description = "",
@@ -13,12 +15,14 @@ parser.add_argument("--out-rop-path", default = None)
 
 def main(args):
     argv = args.command.split()
-    envp = args.envp.split()
+    #envp = args.envp.split()
+
+    push_array_of_strings(argv)
 
     gadgets, data_address = parse_out_rop(Path(args.out_rop_path))
 
-    push_array_of_strings(argv)
-    push_array_of_strings(envp)
+    #push_array_of_strings(argv)
+    #push_array_of_strings(envp)
     
 
 # Available gadgets
@@ -37,19 +41,32 @@ def parse_out_rop(path: Path):
         ": pop ecx ; pop ebx ; ret": None,
         ": int 0x80": None,
     }
+
     data_address = None
+    data_addrPat = re.compile(r",\s*([^)]*)")
+
     with open(path) as out_rop:
-        [line for line in out_rop if ]
+        for line in out_rop:
+            if ".data" in line and data_address is None:
+                match = data_addrPat.search(line)
+                if match:
+                    extracted_part = match.group(1)
+                    data_address = extracted_part
 
+            elif any(gadget in line for gadget in rop_gadgets.keys()):
+                tokens = line.split()
+                gadget_key = ' '.join(tokens[1:])
+                rop_gadgets[gadget_key] = tokens[0]
 
-def push_array_of_strings(array, stack_pointer) -> stack_pointer:
-    pointers = []
+    return rop_gadgets, data_address
+
+def push_array_of_strings(array, rop_gadgets):
     for string in array:
-        pointers.append(stack_pointer)
-        chunks = [string[i:i+4] for i in range(0, len(string), 4]
+        chunks = [string[i:i+4] for i in range(0, len(string), 4)]
         chunks = [chunk.ljust(4, '\0') for chunk in chunks]
-    for pointer in pointers:
-        print(pointer)
+
+        for chunk in chunks:
+            print(chunk)
 
 if __name__ == "__main__":
     main(parser.parse_args())
