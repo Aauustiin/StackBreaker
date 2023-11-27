@@ -4,7 +4,7 @@ from enum import Enum
 
 program = ''
 
-def getFunctions():
+def getFunctions_g():
 
     cmd = ['gdb', '--batch']
     cmd.extend(['--ex', 'info functions'])
@@ -26,6 +26,42 @@ def getFunctions():
         for arg in arguments:
             if arg == 'char*':
                 functions.append(match[1])
+
+    return functions
+
+def getFunctions_static():
+    cmd = ['objdump', '-d']
+    cmd.append(program)
+
+    dumpProcess = subp.run(cmd, stdout=subp.PIPE)
+    dumpOut = dumpProcess.stdout.decode()
+
+    funcPat = r'[0-9A-Fa-f]{8}\s+<(\w.+?)>:' # function name
+    funcPat += r'(.*?)\n\n' # function body
+    funcPat = re.compile(funcPat, re.DOTALL)
+    funcs = funcPat.findall(dumpOut)
+
+    vulnFuncs = []
+    for f in funcs:
+        name = f[0]
+        body = f[1]
+        
+        strcpyPat = r'call\s+80481d0\s'
+        strcpyPat = re.compile(strcpyPat, re.MULTILINE)
+        match = strcpyPat.search(body)
+        if match:
+            vulnFuncs.append(name)
+
+    return vulnFuncs
+
+def getFunctions(compile_flags:[str]=['static','g']):
+    functions = []
+
+    if 'g' in compile_flags:
+        functions = getFunctions_g()
+
+    elif 'static' in compile_flags:
+        functions = getFunctions_static()
 
     return functions
 

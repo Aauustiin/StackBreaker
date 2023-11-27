@@ -15,7 +15,7 @@ def search(breakPoint, pad='A'):
     padStr = hex(ord(pad))[2:]
 
     lowLim = 0
-    uppLim = 1000
+    uppLim = 1024
 
     guess =  math.floor( (lowLim + uppLim) / 2 )
     while True:
@@ -45,7 +45,15 @@ def search(breakPoint, pad='A'):
                 found , _ = gdb.checkPad(breakPoint, 'padding', padStr)
                 if found: break
 
-    print('    > Found padding!')
+        if uppLim - guess <= 1:
+            guess = -1
+            break
+
+    if guess == -1:
+        print('    > Could not find padding. Giving up...')
+    else:
+        print('    > Found padding!')
+        print('    > Padding length: {}'.format(guess))
 
     return guess
 
