@@ -85,19 +85,21 @@ class CallGraph:
         print(self.level)
         print(self.succesors)
 
-    def getPath(self, f:str) -> List[str]:
-        succCpy = self.succesors
-
-        dicovered = []
-        queue = ['main']
+    def getPath(self, target:str) -> List[str]:
+        vis = []
+        queue = [['main']]
         while queue:
-            path = queue.pop()
-            v = queue.pop(0)
-            if v not in dicovered:
-                dicovered.append(v)
-                for succ in self.succesors[v]:
-                    if succ == f:
+            path = queue.pop(0)
+            func = path[-1]
 
-                    stack.append(succ)
+            if func == target:  
+                return path
+
+            if func not in vis:
+                vis.append(func)
+                for succ in self.succesors[func]:
+                    new_path = path.copy()
+                    new_path.append(succ)
+                    queue.append(new_path)
 
         
