@@ -4,5 +4,9 @@
 # ignore .vscode folder
 .vscode
 
+# ignore .idea folder
+.idea/*
+vagrant/synced/StackBreaker/.idea/*
+
 # ignore pylance stuff
 __pycache__
