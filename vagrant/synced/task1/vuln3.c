@@ -2,9 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+
 int copyData(char *string)
 {
-	char buf[32];
+	char buf[128];
 	strcpy(buf, string);
 	return (0);
 }

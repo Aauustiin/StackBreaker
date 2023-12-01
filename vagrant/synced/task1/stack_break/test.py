@@ -1,7 +1,4 @@
-#!/usr/bin/python3
-import subprocess
+from typing import List
 
-cmd = ['gdb','--quiet','-x','gdbscript','../vuln3-32']
-gdb = subprocess.run(cmd, stdout=subprocess.PIPE)
-print(gdb.stdout.decode())
-
+def func() -> List[str]:
+    return ['a', 'b', 'c']
