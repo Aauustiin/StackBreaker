@@ -1,51 +1,26 @@
 import vulnerability_find as vuln
 import padding_handler as pad
 
-import sys
+from pathlib import Path
+from typing import List
 
-if not len(sys.argv) == 2:
-    print("[*] Improper usage.")
-    print("[*] Correct program format: exploit_stack PROGRAM_PATH")
-    exit(0)
+def getPaddingLength(program:Path) -> List[int]:
+    vuln.program = program
+    pad.program = program
 
-program = sys.argv[1]
+    funcs = vuln.getFunctions()
+    funcs = vuln.getVulerableFunctions(funcs)
+    bPoints = []
+    for f in funcs:
+        bps = vuln.getBPoints(f)
+        bPoints.append((f, bps))
 
-vuln.program = program
-pad.program = program
+    paddings = []
+    for el in bPoints:
+        if len(el[1]) == 0: continue
+        for bp in el[1]:
+            padLength = pad.search(bp)
+            if padLength > 0: 
+                paddings.append(padLength)
 
-funcs = vuln.getFunctions()
-fNames = [f[0] for f in funcs]
-g = CallGraph(program, fNames)
-g.printGraph()
-for f in fNames:
-    print(g.getPath())
-funcs = vuln.getVulerableFunctions(funcs)
-print(funcs)
-
-sys.exit()
-
-bPoints = []
-for f in funcs:
-    bps = vuln.getBPoints(f)
-    bPoints.append((f, bps))
-
-print(bPoints)
-
-paddings = []
-for el in bPoints:
-    if len(el[1]) == 0: continue
-    print('Function {}:'.format(el[0]))
-    for bp in el[1]:
-        print('  > Trying break point {}...'.format(bp))
-        padLength = pad.search(bp)
-        if padLength > 0: 
-            paddings.append(padLength)
-
-
-
-print('Found {} possible paddings'.format(len(paddings)))
-
-
-
-
-
+    return paddings

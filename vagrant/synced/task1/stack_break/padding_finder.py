@@ -2,7 +2,7 @@
 
 import vulnerability_find as vuln
 import padding_handler as pad
-from call_analysis import CallGraph
+# from call_analysis import CallGraph
 
 import sys
 
@@ -18,14 +18,13 @@ pad.program = program
 
 funcs = vuln.getFunctions()
 fNames = [f[0] for f in funcs]
-g = CallGraph(program, fNames)
-g.printGraph()
-for f in fNames:
-    print(g.getPath())
+# g = CallGraph(program, fNames)
+# g.printGraph()
+# for f in fNames:
+#     print(g.getPath())
 funcs = vuln.getVulerableFunctions(funcs)
-print(funcs)
 
-sys.exit()
+# sys.exit()
 
 bPoints = []
 for f in funcs:

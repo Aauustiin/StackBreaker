@@ -1,9 +1,11 @@
 import subprocess as subp
 import math
 import re
+import os
 from enum import Enum
+from pathlib import Path
 
-program = ''
+program: Path
 
 def createPadding(len, file='padding', pad=b'A'):
     padding = len * pad
@@ -57,17 +59,19 @@ def checkPad(bPoint, padf, pad):
 def search(breakPoint, pad='A'):
     padBytes = pad.encode()
     padStr = hex(ord(pad))[2:]
+    padF = 'padding'
 
     lowLim = 0
     uppLim = 1024
 
+
     guess =  math.floor( (lowLim + uppLim) / 2 )
     while True:
-        createPadding(guess, pad=padBytes)
+        createPadding(guess, padF, pad=padBytes)
 
         # print('    > Trying padding length {}...'.format(guess))
 
-        found, searchScope = checkPad(breakPoint, 'padding', padStr)
+        found, searchScope = checkPad(breakPoint, padF, padStr)
 
         if found: break
 
@@ -85,19 +89,15 @@ def search(breakPoint, pad='A'):
             # print('    > Almost there...')
             while True:
                 guess -= 1
-                createPadding(guess, pad=padBytes)
-                found , _ = checkPad(breakPoint, 'padding', padStr)
+                createPadding(guess, file=padF ,pad=padBytes)
+                found , _ = checkPad(breakPoint, padF, padStr)
                 if found: break
 
         if uppLim - guess <= 1:
             guess = -1
             break
 
-    if guess == -1:
-        print('    > Could not find padding. Giving up...')
-    else:
-        print('    > Found padding!')
-        print('    > Padding length: {}'.format(guess))
+        os.remove(padF)
 
     return guess
 
