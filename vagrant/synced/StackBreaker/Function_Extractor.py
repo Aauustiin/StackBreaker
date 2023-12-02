@@ -57,12 +57,31 @@ def extract_functions(out_rop_path):
                 null_buffer = execve_buffer
                 execve_buffer = StringIO()
 
+    push_bytes_function.seek(0)
+    push_ptr_function = StringIO()
+    flag = False
+    for line in push_bytes_function.readlines():
+        if "def push_bytes(data, address):" in line:
+            push_ptr_function.write("def push_ptr(ptr, address):\n")
+        elif "p += data" in line:
+            flag = True
+        elif flag:
+            tokens = line.split()
+            tokens[3] = "ptr)"
+            new_line = ' '.join(tokens) + '\n'
+            push_ptr_function.write("    " + new_line)
+            push_ptr_function.write(line)
+        else:
+            push_ptr_function.write(line)
+
     push_null_function.write(null_buffer.getvalue())
     push_null_function.write("    return p\n")
     execve_syscall_function.write(execve_buffer.getvalue())
     execve_syscall_function.write("    return p\n")
     push_bytes_function.write("    return p\n")
+    push_ptr_function.write("    return p\n")
 
+    push_ptr_function = push_ptr_function.getvalue()
     push_bytes_function = push_bytes_function.getvalue()
     push_null_function = push_null_function.getvalue()
     execve_syscall_function = execve_syscall_function.getvalue()
@@ -74,6 +93,8 @@ def extract_functions(out_rop_path):
     with open(extracted_functions_path, 'w') as file:
         file.write("from struct import pack\n\n\n")
         file.write(push_bytes_function)
+        file.write("\n\n")
+        file.write(push_ptr_function)
         file.write("\n\n")
         file.write(push_null_function)
         file.write("\n\n")

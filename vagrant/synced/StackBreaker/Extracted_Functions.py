@@ -11,6 +11,16 @@ def push_bytes(data, address):
     return p
 
 
+def push_ptr(ptr, address):
+    p = b''
+    p += pack('<I', 0x0806e13b) # pop edx ; ret
+    p += pack('<I', address) # @ .data
+    p += pack('<I', 0x080a8cb6) # pop eax ; ret
+    p += pack('<I', ptr) # mov dword ptr [edx], eax ; ret
+    p += pack('<I', 0x08056bd5) # mov dword ptr [edx], eax ; ret
+    return p
+
+
 def push_null(address):
     p = b''
     p += pack('<I', 0x0806e13b) # pop edx ; ret
