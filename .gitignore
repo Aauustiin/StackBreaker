@@ -1,2 +1,6 @@
 #ignore .vagrant folder
 **.vagrant
+
+vagrant/Vagrantfile
+vagrant/synced/ROPgadget-master/*
+vagrant/synced/netcat-0.7.1/*
