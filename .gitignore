@@ -4,3 +4,5 @@
 vagrant/Vagrantfile
 vagrant/synced/ROPgadget-master/*
 vagrant/synced/netcat-0.7.1/*
+vagrant/synced/.idea/*
+vagrant/synced/StackBreaker/.idea/*
