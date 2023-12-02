@@ -30,8 +30,8 @@ def main(args):
     rop_chain, stack_ptr, argv_ptr, chunks,null = chunking(data_values,gadgets, data_address, rop_chain, null)
     rop_chain += pack('<I', argv_ptr)  # Put argv in ecx
     rop_chain, register_info = readinstructions(args.shellcode,data_address,data_values,contents,rop_chain,gadgets, null)
-    # print(rop_chain.hex())
-    # print((rop_chain))
+    print(rop_chain.hex())
+    print((rop_chain))
     # print("----")
 
     sys.stdout.buffer.write(rop_chain)
