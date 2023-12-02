@@ -1,8 +1,12 @@
-#ignore .vagrant folder
+# ignore .vagrant folder
 **.vagrant
 
-vagrant/Vagrantfile
-vagrant/synced/ROPgadget-master/*
-vagrant/synced/netcat-0.7.1/*
-vagrant/synced/.idea/*
+# ignore .vscode folder
+.vscode
+
+# ignore .idea folder
+.idea/*
 vagrant/synced/StackBreaker/.idea/*
+
+# ignore pylance stuff
+__pycache__
