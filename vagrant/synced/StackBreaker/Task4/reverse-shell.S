@@ -7,7 +7,7 @@ global _start
 	  mov ebx, filename
 	  mov ecx, argv
 	  xor edx, edx
-	  mov eax, 11s
+	  mov eax, 11
 	  int 0x80
 
   section .rodata

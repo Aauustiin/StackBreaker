@@ -38,7 +38,7 @@ def main(args):
 
     sys.stdout.buffer.write(rop_chain)
 
-    file_path = "chain"
+    file_path = "chaining"
     try:
         with open(file_path, 'wb') as file:  # 'xb' mode for creating and writing in binary
             file.write(rop_chain)
