@@ -37021,7 +37021,6 @@ ROP chain generation
 	[+] Gadget found: 0x8056190 xor eax, eax ; ret
 	[+] Gadget found: 0x807ba0a inc eax ; ret
 
-
 - Step 3 -- Init syscall arguments gadgets
 
 	[+] Gadget found: 0x80481c9 pop ebx ; ret
