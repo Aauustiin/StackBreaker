@@ -44,6 +44,8 @@ def main(args):
             file.write(rop_chain)
     except FileExistsError:
         print(f"The file '{file_path}' already exists.")
+
+    print("------")    
         
     for address in rop_chain:
         hex_address = hex(address)
@@ -73,9 +75,9 @@ def reads(file_name,data_address,data_values):
                         if(label == 'filename'):
                             label_address_map[label] = current_address 
                         elif(label == 'argv'): 
-                            label_address_map[label] = current_address + 2
+                            label_address_map[label] = current_address 
                         else: 
-                            label_address_map[label] = current_address + 1
+                            label_address_map[label] = current_address 
                         if 'db' in data or 'dw' in data or 'dd' in data or 'dq' in data or 'dt' in data:
                             # Parse the data line
                             items, current_address = parse_assembly_line(data, current_address)
@@ -152,6 +154,9 @@ def chunking(array, data_address, null,label_address_map):
 
     for string in array:
             if string in label_address_map:
+                    print("pointers", pointers)
+                    print("stackpointer",stack_pointer)
+                    print(label_address_map, "labels")
                     rop_chain += Extracted_Functions.push_ptr(label_address_map[string], stack_pointer)
                     stack_pointer += 4
 
