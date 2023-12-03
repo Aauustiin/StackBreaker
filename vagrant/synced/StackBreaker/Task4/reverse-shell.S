@@ -10,7 +10,6 @@ global _start
 	  mov eax, 11
 	  int 0x80
 
-
   section .rodata
   filename: db "/tmp/nc", 0
   arg1: db "-lnp", 0

