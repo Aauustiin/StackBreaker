@@ -1,8 +1,9 @@
-import vulnerability_find as vuln
-import padding_handler as pad
+import PaddingFinder.vulnerability_find as vuln
+import PaddingFinder.padding_handler as pad
 
 from pathlib import Path
 from typing import List
+
 
 def getPaddingLength(program:Path) -> List[int]:
     vuln.program = program
