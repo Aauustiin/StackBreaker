@@ -26,7 +26,7 @@ def main():
     num_of_instructions_to_select = 5
     # selected_instructions = random.sample(instruction_list, num_of_instructions_to_select)
     selected_instructions = [random.choice(instruction_list) for _ in range(num_of_instructions_to_select)]
-    selected_instructions.append('and eax, 0xFFFFFFFF')
+    # selected_instructions.append('and eax, 0xFFFFFFFF')
     for instruction in selected_instructions:
         print(instruction)
         eax = simulate_instruction(eax, instruction)
@@ -38,7 +38,7 @@ def main():
     selected_instructions_str = '\n'.join(selected_instructions)
 
     # Passing the selected instructions to the insert_instructions function
-    insert_instructions('eax.s', 'mov eax, 0', 'mov ebx, .data', selected_instructions_str)
+    insert_instructions('eax.s', 'mov eax, 0', 'mov ebx, data', selected_instructions_str)
 
 def insert_instructions(file_name, start_text, end_text, new_instructions):
     with open(file_name, 'r') as file:
@@ -48,8 +48,16 @@ def insert_instructions(file_name, start_text, end_text, new_instructions):
     end_index = next((i for i, line in enumerate(lines) if end_text in line), None)
 
     if start_index is not None and end_index is not None and start_index < end_index:
-        indentation = ''.join(char for char in lines[start_index] if char.isspace())
-        indented_instructions = [indentation + line + '\n' for line in new_instructions.strip().split('\n')]
+        # Determine the indentation of the start line and add additional indentation
+        base_indentation = ''.join(char for char in lines[start_index] if char.isspace())
+        additional_indentation = '    '  # Adjust this based on your desired indentation level
+        full_indentation = base_indentation + additional_indentation
+
+        # Split the new instructions into lines and prepare with correct indentation
+        indented_instructions = []
+        for line in new_instructions.splitlines():
+            if line.strip():  # Only process non-empty lines
+                indented_instructions.append(full_indentation + line.strip() + '\n')
 
         # Replace existing content between start_index and end_index with the new instructions
         lines[start_index + 1:end_index] = indented_instructions
@@ -58,6 +66,7 @@ def insert_instructions(file_name, start_text, end_text, new_instructions):
 
     with open(file_name, 'w') as file:
         file.writelines(lines)
+
 
 def simulate_instruction(eax, instruction):
     parts = instruction.split(';')[0].split()  # Splitting at ';' to remove the comment
