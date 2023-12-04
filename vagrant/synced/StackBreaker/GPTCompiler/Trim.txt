@@ -1,0 +1,440 @@
+0x0806cf10 : aaa ; add byte ptr [eax], al ; ret
+0x080c2e86 : aad 8 ; stosd dword ptr es:[edi], eax ; ret
+0x08067525 : adc al, dh ; ret
+0x08048a89 : adc bh, dh ; ret
+0x08067555 : adc byte ptr [eax], ah ; ret
+0x08093828 : adc byte ptr [eax], al ; add byte ptr [eax], al ; ret
+0x08067545 : adc byte ptr [eax], dl ; ret
+0x08093e09 : adc byte ptr [ecx], ah ; ret
+0x0808e077 : adc byte ptr [ecx], bh ; ret
+0x080a8899 : adc byte ptr [edi], cl ; xchg esp, eax ; ret
+0x080c7b7f : adc byte ptr [edx], al ; arpl word ptr [edx], cx ; ret
+0x080c696f : adc byte ptr [edx], al ; les ecx, ptr [edx] ; ret
+0x080c6153 : adc byte ptr [edx], al ; ret
+0x080c696e : adc byte ptr cs:[edx], al ; les ecx, ptr [edx] ; ret
+0x080c6152 : adc byte ptr cs:[edx], al ; ret
+0x080487b4 : adc cl, cl ; ret
+0x080ca548 : adc eax, dword ptr [ecx] ; ret
+0x080645d6 : adc eax, dword ptr [edx] ; mov eax, edx ; ret
+0x080d3c73 : add ah, bh ; ret
+0x08048761 : add ah, dh ; mov ebx, dword ptr [esp] ; ret
+0x080d0d0b : add ah, dh ; ret
+0x080579c0 : add al, 0 ; add bl, dh ; ret
+0x08093101 : add al, 0 ; add byte ptr [eax], al ; ret
+0x080904c6 : add al, 0 ; add byte ptr [ecx], al ; ret
+0x08093d13 : add al, 0 ; int 0x80
+0x080ca48f : add al, 2 ; inc eax ; ret
+0x080cb82b : add al, 2 ; inc ebp ; ret
+0x080ce363 : add al, 2 ; pop edx ; ret
+0x080d0eb7 : add al, 2 ; push eax ; ret
+0x080c8fdb : add al, 2 ; push edi ; ret
+0x080c9d03 : add al, 2 ; stosb byte ptr es:[edi], al ; ret
+0x080b80a7 : add al, al ; sldt word ptr [eax] ; ret
+0x080930e1 : add al, byte ptr [eax] ; add byte ptr [eax], al ; ret
+0x0805c9c0 : add al, byte ptr [eax] ; add dh, dh ; ret
+0x080c8025 : add al, byte ptr [edx] ; inc ebx ; ret
+0x080ce3d9 : add al, byte ptr [edx] ; inc ecx ; ret
+0x080c9001 : add al, byte ptr [edx] ; pushal ; ret
+0x08093aa7 : add al, ch ; ret
+0x0809bd07 : add bh, al ; inc esp ; ret
+0x080a27cf : add bh, al ; ret
+0x080487bf : add bl, dh ; ret
+0x080a27cd : add byte ptr [eax], al ; add bh, al ; ret
+0x080487bd : add byte ptr [eax], al ; add bl, dh ; ret
+0x080497b3 : add byte ptr [eax], al ; add byte ptr [eax], al ; ret
+0x0806e60d : add byte ptr [eax], al ; add byte ptr [eax], bh ; ret
+0x08084afd : add byte ptr [eax], al ; add byte ptr [ecx], ch ; ret
+0x0809856d : add byte ptr [eax], al ; add cl, ch ; ret
+0x08057b3a : add byte ptr [eax], al ; add dh, dh ; ret
+0x080930ae : add byte ptr [eax], al ; add eax, 3 ; ret
+0x080d3c72 : add byte ptr [eax], al ; cld ; ret
+0x080d0d0a : add byte ptr [eax], al ; hlt ; ret
+0x080495f1 : add byte ptr [eax], al ; int 0x80
+0x0806b91a : add byte ptr [eax], al ; mov eax, 1 ; int 0x80
+0x080930ce : add byte ptr [eax], al ; mov eax, 1 ; ret
+0x080930de : add byte ptr [eax], al ; mov eax, 2 ; ret
+0x080930ee : add byte ptr [eax], al ; mov eax, 3 ; ret
+0x080930fe : add byte ptr [eax], al ; mov eax, 4 ; ret
+0x0809310e : add byte ptr [eax], al ; mov eax, 5 ; ret
+0x0809311e : add byte ptr [eax], al ; mov eax, 6 ; ret
+0x0809312e : add byte ptr [eax], al ; mov eax, 7 ; ret
+0x0805d9fe : add byte ptr [eax], al ; pop ebx ; ret
+0x08092150 : add byte ptr [eax], al ; pop edi ; ret
+0x080d0c72 : add byte ptr [eax], al ; pop esp ; ret
+0x080497b5 : add byte ptr [eax], al ; ret
+0x0806a979 : add byte ptr [eax], al ; sub eax, edx ; ret
+0x0805618e : add byte ptr [eax], al ; xor eax, eax ; ret
+0x0806e60f : add byte ptr [eax], bh ; ret
+0x08056f2c : add byte ptr [ecx], al ; pop ebx ; ret
+0x080904c8 : add byte ptr [ecx], al ; ret
+0x0804c946 : add byte ptr [ecx], bh ; ret
+0x08084aff : add byte ptr [ecx], ch ; ret
+0x0807781b : add byte ptr [edi], cl ; inc ebp ; ret
+0x0805a7f6 : add byte ptr [edi], cl ; inc edi ; ret
+0x0804957f : add byte ptr [edi], cl ; scasd eax, dword ptr es:[edi] ; ret
+0x080774c0 : add byte ptr [edi], cl ; xchg esi, eax ; ret
+0x0806cf72 : add byte ptr ss:[eax], al ; ret
+0x08058737 : add ch, al ; ret
+0x08095f65 : add cl, byte ptr [edi] ; inc edx ; ret
+0x080cc9c6 : add cl, byte ptr [edx] ; ret
+0x0804e470 : add cl, ch ; ret
+0x0806751c : add dh, byte ptr [eax] ; ret
+0x08057b3c : add dh, dh ; ret
+0x080d0d09 : add dword ptr [eax], eax ; add ah, dh ; ret
+0x0806b91d : add dword ptr [eax], eax ; add byte ptr [eax], al ; int 0x80
+0x080930d1 : add dword ptr [eax], eax ; add byte ptr [eax], al ; ret
+0x0809d4e2 : add dword ptr [eax], eax ; add byte ptr [ecx], bh ; ret
+0x080c4997 : add dword ptr [eax], eax ; inc ecx ; ret
+0x0805c15e : add dword ptr [eax], eax ; pop ebx ; ret
+0x080d18d5 : add dword ptr [ebx], 2 ; inc ecx ; ret
+0x080a7ed7 : add dword ptr [ecx], eax ; ret
+0x08076729 : add dword ptr [ecx], edi ; ret
+0x0805d474 : add dword ptr [edi], ecx ; inc ebp ; ret
+0x080c8024 : add dword ptr [edx], 2 ; inc ebx ; ret
+0x080ce3d8 : add dword ptr [edx], 2 ; inc ecx ; ret
+0x080c9000 : add dword ptr [edx], 2 ; pushal ; ret
+0x080c4fb6 : add dword ptr [edx], ecx ; ret
+0x080497b2 : add eax, 0 ; ret
+0x08092240 : add eax, 1 ; pop edi ; ret
+0x080930a0 : add eax, 1 ; ret
+0x08092245 : add eax, 2 ; pop edi ; ret
+0x08093097 : add eax, 2 ; ret
+0x08091e85 : add eax, 3 ; pop edi ; ret
+0x080930b0 : add eax, 3 ; ret
+0x0809224f : add eax, 4 ; pop edi ; ret
+0x08092254 : add eax, 5 ; pop edi ; ret
+0x08092259 : add eax, 6 ; pop edi ; ret
+0x08091eab : add eax, 7 ; pop edi ; ret
+0x08092263 : add eax, 8 ; pop edi ; ret
+0x08092268 : add eax, 9 ; pop edi ; ret
+0x080497b1 : add eax, dword ptr [0] ; ret
+0x080930f1 : add eax, dword ptr [eax] ; add byte ptr [eax], al ; ret
+0x080d18d6 : add eax, dword ptr [edx] ; inc ecx ; ret
+0x080a45d0 : add eax, dword ptr [esp] ; ret
+0x080497b0 : add eax, dword ptr gs:[0] ; ret
+0x08056370 : add eax, ebx ; pop ebx ; ret
+0x08066f76 : add eax, ecx ; pop edi ; ret
+0x08067384 : add eax, ecx ; ret
+0x08067017 : add eax, edi ; pop edi ; ret
+0x080673cd : add eax, edx ; add eax, ecx ; ret
+0x08067533 : add eax, edx ; ret
+0x080c4fb4 : add ebp, ebx ; add dword ptr [edx], ecx ; ret
+0x080d1b54 : add ebp, edi ; add dword ptr [edx], ecx ; ret
+0x080c5458 : add ebp, esp ; add dword ptr [edx], ecx ; ret
+0x080d2938 : add ebx, dword ptr [ecx] ; add dword ptr [edx], ecx ; ret
+0x080ce208 : add ecx, dword ptr [eax] ; add dword ptr [edx], ecx ; ret
+0x080d1b94 : add ecx, dword ptr [edi] ; add dword ptr [edx], ecx ; ret
+0x080c4fe6 : add ecx, dword ptr [edx] ; ret
+0x080d28f8 : add ecx, dword ptr [esi] ; add ecx, dword ptr [edx] ; ret
+0x080d32e8 : add ecx, eax ; add dword ptr [edx], ecx ; ret
+0x08048843 : add ecx, ecx ; ret
+0x080d1b24 : add edi, dword ptr [ecx] ; add dword ptr [edx], ecx ; ret
+0x08093d0f : add edx, 0x462f1 ; int 0x80
+0x080ce128 : add edx, dword ptr [eax] ; add dword ptr [edx], ecx ; ret
+0x080d28c8 : add edx, dword ptr [edi] ; add ecx, dword ptr [edx] ; ret
+0x080d2908 : add edx, edi ; add ecx, dword ptr [edx] ; ret
+0x080c5a88 : add esi, ebx ; add dword ptr [edx], ecx ; ret
+0x08069ab9 : add esp, 4 ; pop ebx ; ret
+0x080481c6 : add esp, 8 ; pop ebx ; ret
+0x080d32d9 : add word ptr [edx], cx ; ret
+0x08056ed2 : and al, 4 ; ret
+0x0806e100 : and al, 4 ; setae al ; ret
+0x0809d392 : and al, 8 ; mov dword ptr [eax], edx ; ret
+0x0805e8f7 : and al, 8 ; pop ebx ; ret
+0x0806a589 : and al, 8 ; pop edi ; ret
+0x0804c9ae : and byte ptr [eax], al ; add byte ptr [ecx], bh ; ret
+0x0804865b : and byte ptr [ecx], ah ; ret
+0x0806e438 : and byte ptr [ecx], al ; pop ebx ; ret
+0x08085fd8 : and byte ptr [ecx], bh ; ret
+0x08076257 : and dh, dh ; ret
+0x080c7b81 : arpl word ptr [edx], cx ; ret
+0x080d4bdc : bound ecx, qword ptr [edx] ; ret
+0x08067530 : bsf eax, eax ; add eax, edx ; ret
+0x08067381 : bsf ecx, ecx ; add eax, ecx ; ret
+0x08064385 : clc ; pop edi ; ret
+0x080488d1 : cld ; leave ; ret
+0x0806a5b5 : cld ; pop edi ; ret
+0x080489e5 : cld ; ret
+0x08090ee2 : cli ; pop edi ; ret
+0x08090ea2 : cmc ; pop edi ; ret
+0x0807c387 : cmc ; ret
+0x0806a8c1 : cmovb eax, ecx ; ret
+0x0808f9b4 : cmove eax, ecx ; ret
+0x0809d8bc : cmove eax, edx ; pop edi ; ret
+0x0806e019 : cmove eax, edx ; ret
+0x0805db83 : cmovne eax, ecx ; ret
+0x08072aee : cmovs eax, edx ; ret
+0x0807428a : cmp al, 1 ; ret
+0x08091b15 : cmp al, dh ; pop edi ; ret
+0x08091b45 : cmp byte ptr [eax], ah ; pop edi ; ret
+0x08091b35 : cmp byte ptr [eax], dl ; pop edi ; ret
+0x08059ea7 : cmp byte ptr [edi], cl ; xchg ebp, eax ; ret
+0x0807d325 : cmp ch, byte ptr [ecx] ; ret
+0x080ae058 : das ; ret
+0x080cad9d : dec byte ptr [edx] ; ret
+0x0806be44 : dec eax ; add byte ptr [eax], al ; ret
+0x08062b83 : dec eax ; ret
+0x080c6bb7 : dec ebp ; ret
+0x080d0196 : dec ebx ; ret
+0x08076256 : dec edi ; and dh, dh ; ret
+0x080c7b90 : dec edi ; ret
+0x080cf9c0 : dec edx ; ret
+0x0807ba99 : dec edx ; sub bh, al ; ret
+0x08086776 : dec esi ; ret
+0x080a8c16 : dec esp ; ret
+0x080608f8 : fadd st(3) ; xor eax, eax ; ret
+0x080c2b34 : fcmovb st(0), st(3) ; ret
+0x080ab3fd : fcmovnb st(0), st(7) ; ret
+0x0806a210 : fdivr st(7) ; pop ebx ; ret
+0x08090593 : fmul dword ptr [edi] ; inc edx ; ret
+0x080c04ac : fstp dword ptr [edx] ; push ds ; ret
+0x08048762 : hlt ; mov ebx, dword ptr [esp] ; ret
+0x08090e1a : hlt ; pop edi ; ret
+0x080d0d0c : hlt ; ret
+0x0806a8b3 : hlt ; xor eax, eax ; ret
+0x080c9b35 : imul ecx, dword ptr [esi], 4 ; ret
+0x080c5459 : in al, dx ; add dword ptr [edx], ecx ; ret
+0x08083fc1 : inc dword ptr [ecx] ; ret
+0x080a8ba5 : inc eax ; dec eax ; ret
+0x080a8c15 : inc eax ; dec esp ; ret
+0x080a8cb5 : inc eax ; pop eax ; ret
+0x0805e89c : inc eax ; pop edi ; ret
+0x080a8c65 : inc eax ; pop esp ; ret
+0x080a8c55 : inc eax ; push eax ; ret
+0x080a8cc5 : inc eax ; push esp ; ret
+0x0807ba0a : inc eax ; ret
+0x08062e0a : inc ebp ; pop ebx ; ret
+0x08049e5c : inc ebp ; ret
+0x080c4e5d : inc ebx ; ret
+0x080ca59b : inc ecx ; adc eax, dword ptr [ecx] ; ret
+0x080c4999 : inc ecx ; ret
+0x08057b66 : inc edi ; or byte ptr [ecx], bh ; ret
+0x08090e81 : inc edi ; pop edi ; ret
+0x08049d44 : inc edi ; ret
+0x080ca547 : inc edx ; adc eax, dword ptr [ecx] ; ret
+0x080a8c31 : inc edx ; dec esp ; ret
+0x08065e49 : inc edx ; pop es ; ret
+0x08065f23 : inc edx ; push cs ; ret
+0x08065e3b : inc edx ; push es ; ret
+0x0805ee67 : inc edx ; ret
+0x080c6335 : inc esi ; ret
+0x08067524 : inc esp ; adc al, dh ; ret
+0x08067554 : inc esp ; adc byte ptr [eax], ah ; ret
+0x08067544 : inc esp ; adc byte ptr [eax], dl ; ret
+0x0806751b : inc esp ; add dh, byte ptr [eax] ; ret
+0x08056ed1 : inc esp ; and al, 4 ; ret
+0x0809bd09 : inc esp ; ret
+0x080a141e : inc esp ; rol edi, cl ; ret
+0x080cb85d : insd dword ptr es:[edi], dx ; add dword ptr [edx], ecx ; ret
+0x080495f3 : int 0x80
+0x08090e72 : int1 ; pop edi ; ret
+0x0807bc5a : ja 0x807bc5c ; add byte ptr [eax], al ; int 0x80
+0x080a7871 : js 0x80a7878 ; int 0x80
+0x080a7b04 : js 0x80a7b0c ; int 0x80
+0x0807658f : lds ecx, ptr [edi] ; xchg edi, eax ; ret
+0x08066e30 : lea eax, [edi] ; pop edi ; ret
+0x08065c94 : lea eax, [edx] ; pop edi ; ret
+0x08065dd4 : lea eax, [edx] ; ret
+0x080930aa : lea edi, [edi] ; add eax, 3 ; ret
+0x08056189 : lea edi, [edi] ; xor eax, eax ; ret
+0x0809309c : lea esi, [esi] ; add eax, 1 ; ret
+0x080aaa44 : lea esi, [esi] ; pop ebx ; ret
+0x080a8dac : lea esi, [esi] ; ret
+0x080623ac : lea esi, [esi] ; xor eax, eax ; ret
+0x08067383 : leave ; add eax, ecx ; ret
+0x0806e502 : leave ; int 0x80
+0x080487b5 : leave ; ret
+0x0804f0be : les ebp, ptr [eax] ; pop ebx ; ret
+0x0804c688 : les ebx, ptr [eax] ; pop ebx ; ret
+0x080481c7 : les ecx, ptr [eax] ; pop ebx ; ret
+0x080c6971 : les ecx, ptr [edx] ; ret
+0x080487b3 : les edx, ptr [eax] ; leave ; ret
+0x080a6bb3 : les esp, ptr [eax] ; ret
+0x080d1ba5 : lodsd eax, dword ptr [esi] ; or dword ptr [edx], ecx ; ret
+0x0809f80e : lodsd eax, dword ptr [esi] ; ret
+0x080c068c : mov ah, bl ; push esi ; ret
+0x080830ca : mov byte ptr [edi], cl ; push eax ; ret
+0x08065dd2 : mov byte ptr [edx], al ; lea eax, [edx] ; ret
+0x08064562 : mov byte ptr [edx], al ; mov eax, edx ; ret
+0x08060844 : mov dh, 2 ; sub eax, ecx ; ret
+0x0809d394 : mov dword ptr [eax], edx ; ret
+0x0807bab9 : mov dword ptr [ecx], eax ; pop ebx ; ret
+0x08064574 : mov dword ptr [edx], eax ; mov eax, edx ; ret
+0x08056bd5 : mov dword ptr [edx], eax ; ret
+0x0807bab8 : mov dword ptr gs:[ecx], eax ; pop ebx ; ret
+0x0807bc59 : mov eax, 0x77 ; int 0x80
+0x0807bc50 : mov eax, 0xad ; int 0x80
+0x0806b91c : mov eax, 1 ; int 0x80
+0x08092f04 : mov eax, 1 ; pop ebx ; ret
+0x080930d0 : mov eax, 1 ; ret
+0x08092f0b : mov eax, 2 ; pop ebx ; ret
+0x080930e0 : mov eax, 2 ; ret
+0x080930f0 : mov eax, 3 ; ret
+0x080a95b7 : mov eax, 4 ; pop ebx ; ret
+0x0809214d : mov eax, 4 ; pop edi ; ret
+0x08093100 : mov eax, 4 ; ret
+0x08093110 : mov eax, 5 ; ret
+0x08093120 : mov eax, 6 ; ret
+0x08093130 : mov eax, 7 ; ret
+0x080a95a3 : mov eax, 8 ; pop ebx ; ret
+0x080921a6 : mov eax, 8 ; pop edi ; ret
+0x08056ea0 : mov eax, dword ptr [eax] ; ret
+0x0807ae08 : mov eax, dword ptr [eax] ; sub eax, dword ptr [edx] ; ret
+0x08056bd3 : mov eax, dword ptr [ecx] ; mov dword ptr [edx], eax ; ret
+0x080489e7 : mov eax, dword ptr [esp] ; ret
+0x08093190 : mov eax, ebx ; pop ebx ; ret
+0x08064384 : mov eax, edi ; pop edi ; ret
+0x0806e1a9 : mov eax, edx ; pop ebx ; ret
+0x08064564 : mov eax, edx ; ret
+0x080a8ee0 : mov ebp, dword ptr [ebp] ; mov esp, ecx ; ret
+0x08049358 : mov ebp, dword ptr [esp] ; ret
+0x08048763 : mov ebx, dword ptr [esp] ; ret
+0x08054e5a : mov ecx, dword ptr [esp] ; ret
+0x080930ab : mov edi, 0 ; add eax, 3 ; ret
+0x0806733b : mov edi, 0 ; xor eax, eax ; ret
+0x080c1b66 : mov edi, dword ptr [edx] ; ret
+0x0804cd93 : mov edi, dword ptr [esp] ; ret
+0x08050106 : mov edx, dword ptr [esp] ; ret
+0x080496a9 : mov esi, dword ptr [esp] ; ret
+0x0806a5ef : mov esi, edx ; ret
+0x080a8ee3 : mov esp, ecx ; ret
+0x08064573 : mov word ptr [edx], ax ; mov eax, edx ; ret
+0x080646c4 : movdqu xmmword ptr [edx], xmm0 ; mov eax, edx ; ret
+0x080645d4 : movlpd qword ptr [edx], xmm0 ; mov eax, edx ; ret
+0x080645d5 : movlps qword ptr [edx], xmm0 ; mov eax, edx ; ret
+0x080646c5 : movq qword ptr [edx], mm0 ; mov eax, edx ; ret
+0x080cf655 : movsb byte ptr es:[edi], byte ptr [esi] ; add dword ptr [edx], ecx ; ret
+0x0809f7ae : movsd dword ptr es:[edi], dword ptr [esi] ; ret
+0x080a4805 : movzx eax, al ; neg eax ; ret
+0x08093c11 : movzx eax, al ; pop ebx ; ret
+0x08060843 : movzx eax, byte ptr [edx] ; sub eax, ecx ; ret
+0x080623a5 : movzx edx, byte ptr [edx] ; sub eax, edx ; ret
+0x080608f7 : neg eax ; ret
+0x080a45cf : nop ; add eax, dword ptr [esp] ; ret
+0x0807ba09 : nop ; inc eax ; ret
+0x0806ea6f : nop ; int 0x80
+0x0807bc4f : nop ; mov eax, 0xad ; int 0x80
+0x0806727f : nop ; mov eax, edx ; ret
+0x0804877f : nop ; mov ebx, dword ptr [esp] ; ret
+0x0806ea6e : nop ; nop ; int 0x80
+0x0804823f : nop ; ret
+0x0806a5b4 : or ah, bh ; pop edi ; ret
+0x0809a25f : or al, 1 ; ret
+0x080a399f : or bh, byte ptr [ecx] ; ret
+0x08048842 : or byte ptr [ecx], al ; leave ; ret
+0x08057b67 : or byte ptr [ecx], bh ; ret
+0x080a66eb : or byte ptr [edi], cl ; xchg esp, eax ; ret
+0x080cf626 : or byte ptr [edx], cl ; ret
+0x08088eb9 : or ch, byte ptr [ecx] ; ret
+0x080ceb42 : or cl, byte ptr [edx] ; ret
+0x080d1ba6 : or dword ptr [edx], ecx ; ret
+0x080c2b33 : out dx, al ; fcmovb st(0), st(3) ; ret
+0x080d1b55 : out dx, eax ; add dword ptr [edx], ecx ; ret
+0x08062b82 : outsd dx, dword ptr [esi] ; dec eax ; ret
+0x08062b87 : outsd dx, dword ptr [esi] ; push edx ; ret
+0x0806c958 : outsd dx, dword ptr [esi] ; ret
+0x08093094 : pcmpeqb mm3, qword ptr [ecx] ; add eax, 2 ; ret
+0x0809307d : pcmpeqb mm4, qword ptr [eax] ; ret
+0x08070ccd : pop ds ; add byte ptr [eax], al ; ret
+0x0807bc58 : pop eax ; mov eax, 0x77 ; int 0x80
+0x080a8cb6 : pop eax ; ret
+0x08048a88 : pop ebp ; adc bh, dh ; ret
+0x0804834c : pop ebp ; ret
+0x080a7ed6 : pop ebx ; add dword ptr [ecx], eax ; ret
+0x0805db82 : pop ebx ; cmovne eax, ecx ; ret
+0x0805b66e : pop ebx ; pop edi ; ret
+0x0806e13a : pop ebx ; pop edx ; ret
+0x08049797 : pop ebx ; pop esi ; ret
+0x080481c9 : pop ebx ; ret
+0x0808f8c1 : pop ebx ; sub eax, edx ; ret
+0x08062390 : pop ebx ; xor eax, eax ; ret
+0x0806e162 : pop ecx ; pop ebx ; ret
+0x08057c45 : pop edi ; or byte ptr [ecx], bh ; ret
+0x0804834b : pop edi ; pop ebp ; ret
+0x08069e0e : pop edi ; pop ebx ; ret
+0x08092558 : pop edi ; pop esi ; ret
+0x08049b8b : pop edi ; ret
+0x080912c2 : pop edi ; xor eax, eax ; ret
+0x08093e08 : pop edx ; adc byte ptr [ecx], ah ; ret
+0x080560a5 : pop edx ; pop ebx ; ret
+0x0806e13b : pop edx ; ret
+0x0806462d : pop es ; mov eax, edx ; ret
+0x08065c0a : pop es ; pop edi ; ret
+0x08065e4a : pop es ; ret
+0x08060837 : pop es ; sub eax, ecx ; ret
+0x0806b0f0 : pop es ; xor eax, eax ; ret
+0x080a053c : pop esi ; pop ebp ; ret
+0x08061d8c : pop esi ; pop ebx ; ret
+0x08049b8a : pop esi ; pop edi ; ret
+0x08049798 : pop esi ; ret
+0x0809e4ce : pop esp ; ret
+0x080d28c9 : pop ss ; add ecx, dword ptr [edx] ; ret
+0x0809d615 : pop ss ; ret
+0x080489e4 : popal ; cld ; ret
+0x080d28f9 : push cs ; add ecx, dword ptr [edx] ; ret
+0x08065dc4 : push cs ; pop edi ; ret
+0x08065f24 : push cs ; ret
+0x080c04ae : push ds ; ret
+0x0806e500 : push dword ptr [ecx] ; leave ; int 0x80
+0x080a8c49 : push eax ; dec esp ; ret
+0x080830cc : push eax ; ret
+0x0808d18a : push ebx ; ret
+0x080d129e : push ecx ; ret
+0x08048be7 : push edi ; ret
+0x08062b88 : push edx ; ret
+0x080c04e9 : push es ; cld ; ret
+0x080a7b05 : push es ; int 0x80
+0x08064691 : push es ; mov eax, edx ; ret
+0x08065d0c : push es ; pop edi ; ret
+0x08065e3c : push es ; ret
+0x080608a7 : push es ; sub eax, ecx ; ret
+0x080c068e : push esi ; ret
+0x080a8cc6 : push esp ; ret
+0x080c9003 : pushal ; ret
+0x080a7d87 : rol dword ptr [edi], 9 ; ret
+0x080a141f : rol edi, cl ; ret
+0x0809b7bb : ror byte ptr [edi], 1 ; inc ebp ; ret
+0x080d1a01 : ror byte ptr [edx], 1 ; ret
+0x08050db7 : ror dword ptr [ecx], cl ; ret
+0x0806a5f0 : salc ; ret
+0x080a3972 : sar byte ptr [ecx], 1 ; ret
+0x080987aa : sbb bh, al ; ret
+0x080c04ad : sbb bl, byte ptr [esi] ; ret
+0x080ae05c : scasb al, byte ptr es:[edi] ; ret
+0x08049581 : scasd eax, dword ptr es:[edi] ; ret
+0x0806e102 : setae al ; ret
+0x080d1b95 : sidt [edx] ; ret
+0x080b80a9 : sldt word ptr [eax] ; ret
+0x08090ed2 : stc ; pop edi ; ret
+0x08090f02 : std ; pop edi ; ret
+0x0806cf71 : sti ; add byte ptr ss:[eax], al ; ret
+0x08090ef2 : sti ; pop edi ; ret
+0x080c18aa : sti ; ret
+0x080c9d05 : stosb byte ptr es:[edi], al ; ret
+0x080c2e88 : stosd dword ptr es:[edi], eax ; ret
+0x0807ba9a : sub bh, al ; ret
+0x08086774 : sub byte ptr [edi], cl ; dec esi ; ret
+0x0805637a : sub eax, 1 ; pop ebx ; ret
+0x0809e9f4 : sub eax, dword ptr [0] ; ret
+0x0807ae0a : sub eax, dword ptr [edx] ; ret
+0x0809e9f3 : sub eax, dword ptr gs:[0] ; ret
+0x0806996c : sub eax, ecx ; pop ebx ; ret
+0x08060838 : sub eax, ecx ; ret
+0x080523b4 : sub eax, edi ; ret
+0x08056c0c : sub eax, edx ; ret
+0x0806cf41 : sub esi, dword ptr [edi] ; add byte ptr [eax], al ; ret
+0x0806e017 : test eax, eax ; cmove eax, edx ; ret
+0x08059ea9 : xchg ebp, eax ; ret
+0x0806a5ee : xchg edi, eax ; mov esi, edx ; ret
+0x08076591 : xchg edi, eax ; ret
+0x080c0e78 : xchg edi, eax ; xchg esp, eax ; ret
+0x080ae07c : xchg edx, eax ; ret
+0x080757de : xchg esi, eax ; ret
+0x08049026 : xchg esp, eax ; ret
+0x080d2909 : xlatb ; add ecx, dword ptr [edx] ; ret
+0x080630e2 : xlatb ; ret
+0x0807eec6 : xor ch, byte ptr [ecx] ; ret
+0x0806a209 : xor eax, eax ; pop ebx ; ret
+0x08066f10 : xor eax, eax ; pop edi ; ret
+0x08056190 : xor eax, eax ; ret
+0x0806e501 : xor ecx, ecx ; int 0x80
