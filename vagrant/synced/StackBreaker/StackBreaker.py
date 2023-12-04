@@ -22,7 +22,7 @@ parser.add_argument("--envp", default="")
 parser.add_argument("--shellcode", default=None)
 
 parser.add_argument("--out-rop-path", default=None)
-parser.add_argument("--padding", default=None)
+parser.add_argument("--padding", default=None, type = int)
 
 
 def main(args):
