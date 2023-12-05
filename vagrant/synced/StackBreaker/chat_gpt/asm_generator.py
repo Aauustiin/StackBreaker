@@ -2,7 +2,7 @@ import random
 import ctypes
 
 
-def main():
+def assembly_generator(file_name):
 
     new_asm_instructions = '''
     add eax, 4            ; Adds 4 to EAX\n
@@ -38,7 +38,9 @@ def main():
     selected_instructions_str = '\n'.join(selected_instructions)
 
     # Passing the selected instructions to the insert_instructions function
-    insert_instructions('eax.s', 'mov eax, 0', 'mov ebx, data', selected_instructions_str)
+    insert_instructions(file_name, 'mov eax, 0', 'mov ebx, data', selected_instructions_str)
+    return eax
+
 
 def insert_instructions(file_name, start_text, end_text, new_instructions):
     with open(file_name, 'r') as file:
@@ -101,6 +103,3 @@ def simulate_instruction(eax, instruction):
     print(f"Unsigned '{operation}': {unsigned_eax}")
 
     return eax
-
-
-main()
