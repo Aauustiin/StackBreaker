@@ -1,7 +1,7 @@
 import struct
 
-def main():
-    gpt_gadgets = ["0X0806e13b", "0x000000", "0xzzzzz", "0XX0806e13b", "0x080a8cb6", "0x08056bd5", "0x0806e13b", "0x08056190", "0x0806e13b", "0x08056190", "0x080481c9", "0x080da060", "0x0806e162", "0x080da060", "0x0806e13b"]
+def pack_chain(gpt_gadgets):
+    # gpt_gadgets = ["0X0806e13b", "0x000000", "0xzzzzz", "0XX0806e13b", "0x080a8cb6", "0x08056bd5", "0x0806e13b", "0x08056190", "0x0806e13b", "0x08056190", "0x080481c9", "0x080da060", "0x0806e162", "0x080da060", "0x0806e13b"]
     rop_chain = form_chain(gpt_gadgets)
     # Convert and pack the ROP chain
     p = b''  # Initialize an empty bytes object
@@ -31,5 +31,3 @@ def pack_gadget(gadget):
     gadget_int = int(gadget, 16)
     print(gadget_int)
     return struct.pack('<I', gadget_int) 
-
-main()
