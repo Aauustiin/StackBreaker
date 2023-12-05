@@ -1,12 +1,16 @@
 from openai import OpenAI
 from GadgetTrimmer import *
 from io import StringIO
+from chain_pack import pack_chain
 
 
 def compile_asm(assembly: str, gadgets: str):
     API_KEY = "Get your own"
 
     trimmed_gadgets = standard_trim(gadgets)
+
+    with open("response.txt", 'w') as out_file:
+        out_file.write("")
 
     assembly_so_far = StringIO()
     for line in assembly.splitlines():
@@ -93,6 +97,13 @@ def compile_asm(assembly: str, gadgets: str):
 
         with open("response.txt", 'a') as out_file:
             out_file.write(buffer.getvalue())
+
+    with open("response.txt", 'r') as out_file:
+        lines = out_file.readlines()
+        gadgets = [line.split()[0] for line in lines]
+        packed_gadgets = pack_chain(gadgets)
+    with open("gpt-exploit", 'wb') as out_file:
+        out_file.write(packed_gadgets)
 
     print("Finished")
 
