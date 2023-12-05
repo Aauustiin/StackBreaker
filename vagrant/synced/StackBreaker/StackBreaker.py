@@ -1,10 +1,9 @@
-#!/usr/bin/python3
+#!/usr/local/bin/python3
 
 from Shellcode_Chain_Generator import generate_shellcode_chain
 from PaddingFinder.padding_finder import getPaddingLength
 from Function_Extractor import extract_functions
 from Execve_Chain_Generator import generate_execve_chain
-
 
 import sys
 import argparse

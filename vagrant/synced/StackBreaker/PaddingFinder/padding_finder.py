@@ -10,7 +10,7 @@ def getPaddingLength(program:Path) -> List[int]:
     pad.program = program
 
     funcs = vuln.getFunctions()
-    funcs = vuln.getVulerableFunctions(funcs)
+    funcs, _ = vuln.findVulnerabilities(funcs)
     bPoints = []
     for f in funcs:
         bps = vuln.getBPoints(f)
