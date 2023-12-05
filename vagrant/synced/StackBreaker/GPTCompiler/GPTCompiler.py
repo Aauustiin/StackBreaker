@@ -4,6 +4,7 @@ from io import StringIO
 
 
 def compile_asm(assembly: str, gadgets: str):
+    API_KEY = "Get your own"
 
     trimmed_gadgets = standard_trim(gadgets)
 
