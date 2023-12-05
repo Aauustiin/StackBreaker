@@ -1,0 +1,8 @@
+0x080930d0 : mov eax, 1 ; ret
+0x08092263 : add eax, 8 ; pop edi ; ret
+0x08092264 : pop edi
+0x080930a0 : add eax, 1 ; ret
+0x080930a0 : add eax, 1 ; ret
+0x080481c9  // pop ebx ; ret
+0x00000000  // Value to set EBX to 0
+0x080495f3 : int 0x80
