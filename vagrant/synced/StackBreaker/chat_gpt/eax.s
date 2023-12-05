@@ -5,13 +5,13 @@ section .text
 _start:
     mov eax, 0
       
-    dec eax               ; Decrements EAX by 1
+    inc eax               ; Decrements EAX by 1
       
-    dec eax               ; Decrements EAX by 1
+    inc eax               ; Decrements EAX by 1
       
-    not eax               ; Performs bitwise NOT on EAX
+    inc eax               ; Performs bitwise NOT on EAX
       
-    neg eax               ; Negates the value in EAX (two's complement negation)
+    inc eax               ; Negates the value in EAX (two's complement negation)
       
     inc eax               ; Increments EAX by 1
     mov ebx, data       ; Get the address of the .data section
