@@ -9,6 +9,7 @@ def pack_chain(gpt_gadgets):
         p += pack_gadget(gadget)
 
     print(p)  # Print the packed ROP chain
+    return p
 
 def form_chain(gpt_gadgets):
     chain = []

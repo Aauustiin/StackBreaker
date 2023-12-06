@@ -5,6 +5,18 @@ import string
 from itertools import chain
 
 
+def keyword_trim(in_gadgets: str, keywords) -> str:
+    out_gadgets = StringIO()
+    in_lines = in_gadgets.splitlines()
+    punctuation_remover = str.maketrans('', '', string.punctuation)
+    for line in in_lines:
+        clean_line = line.translate(punctuation_remover)
+        tokens = clean_line.split()
+        if any([keyword in tokens for keyword in keywords]):
+            out_gadgets.write(line + '\n')
+    return out_gadgets.getvalue()
+
+
 def rare_token_trim(in_gadgets: str, whitelist, required_tokens: int) -> str:
     operands = []
     opcodes = []
@@ -30,11 +42,13 @@ def rare_token_trim(in_gadgets: str, whitelist, required_tokens: int) -> str:
 
     enc = tiktoken.encoding_for_model("gpt-4-1106-preview")
 
+    # TODO: Do binary search to trim to required number of tokens
+
     print(len(enc.encode(in_gadgets)))
 
     out_gadgets = StringIO()
     for assembly_line, line in zip(assembly_lines, in_lines):
-        if not any([token in assembly_line for token in rare_tokens[:-26]]):
+        if not any([token in assembly_line for token in rare_tokens[:-30]]):
             out_gadgets.write(line + '\n')
 
     out_gadgets = out_gadgets.getvalue()
@@ -87,20 +101,27 @@ def endings_trim(in_gadgets: str) -> str:
     return out_gadgets.getvalue()
 
 
-def trim(in_gadgets: str) -> str:
+def find_syscall(in_gadgets: str) -> str:
+    for line in in_gadgets.splitlines():
+        if ": int 0x80" in line:
+            return line
+
+
+def standard_trim(in_gadgets: str) -> str:
     out_gadgets = trim_formatting(in_gadgets)
     out_gadgets = max_instruction_trim(out_gadgets, 2)
-    out_gadgets = blacklist_trim(out_gadgets, ['+', '-', '*'])
+    out_gadgets = blacklist_trim(out_gadgets, ['+', '-', '*', ']'])
     out_gadgets = blacklist_trim(out_gadgets, ["0x"])
     out_gadgets = endings_trim(out_gadgets)
     out_gadgets = rare_token_trim(out_gadgets, [], 5000)
+    out_gadgets += find_syscall(in_gadgets)
     return out_gadgets
 
 
 def main():
     with open("../out-rop.txt", "r") as in_file:
         in_gadgets = in_file.read()
-        out_gadgets = trim(in_gadgets)
+        out_gadgets = standard_trim(in_gadgets)
     with open("Trim.txt", "w") as out_file:
         out_file.write(out_gadgets)
 
