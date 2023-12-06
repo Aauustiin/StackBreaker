@@ -466,7 +466,7 @@ def gpt(arg1, arg2, data_values, contents,rop_chain,gadgets, register_info,null,
                     gpt_address_line = contents.get(arg1)
                     gpt_address_line2 = contents.get(arg2)
 
-    return gpt_address_line,gpt_address_line2, line, gpt_lines 
+    # return gpt_address_line,gpt_address_line2, line, gpt_lines,rop_chain  
 
 if __name__ == "__main__":
     generate_shellcode_chain(parser.parse_args())
