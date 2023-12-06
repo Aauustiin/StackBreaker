@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 
-import monitor 
+import score 
 
 from pathlib import Path
 import sys
@@ -8,6 +8,6 @@ import sys
 
 program = Path(sys.argv[1])
 
-monitor.program = program
-monitor.monitor()
+score.program = program
+score.score()
 
