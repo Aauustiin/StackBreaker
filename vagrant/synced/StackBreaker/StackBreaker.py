@@ -54,7 +54,6 @@ def main(args):
             print("Error executing ROPgadget. Return code:", e.returncode)
             print("Error output:", e.output)
         args.out_rop_path = Path("out-rop.txt")
-
     # Extract functions
 
     print("Extracting functions and .data address from ROPgadget output...")

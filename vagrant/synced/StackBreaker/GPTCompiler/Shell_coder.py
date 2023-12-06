@@ -436,37 +436,42 @@ def parse_assembly_line(data_line,current_address):
 def gpt(arg1, arg2, data_values, contents,rop_chain,gadgets, register_info,null,line,gpt_lines):
     gpt_address_line2 = None
     gpt_address_line = None
+    variable_name = None
     if 'mov' in line:
         if arg2 in contents:
             gpt_address_line = contents.get(arg2)
+            variable_name = arg2
 
     elif 'xor' in line:
         if arg2 in contents:
             gpt_address_line = contents.get(arg2)
+            variable_name = arg2
 
     elif 'int' in line:
         parts = line.split()
         if parts[1] in contents:
-            gpt_address_line = contents.get(parts)
+            gpt_address_line = contents.get(parts[1])
+            variable_name = parts[1]
                    
     else: 
         if contents in line :
             parts = line.split()
             if parts[1] in contents:
                 gpt_address_line = contents.get(parts[1])
+                variable_name = parts[1]
             elif parts[2] in contents:
                 gpt_address_line = contents.get(parts[2])
+                variable_name = parts[2]
 
             else:    
                 if arg1 in contents:
-                    gpt_address_line = contents.get(parts)
-                if arg2 in contents:
-                    gpt_address_line = contents.get(parts)
-                if arg1 and arg2 in contents:
                     gpt_address_line = contents.get(arg1)
-                    gpt_address_line2 = contents.get(arg2)
+                    variable_name = arg1
+                if arg2 in contents:
+                    gpt_address_line = contents.get(arg2)
+                    variable_name = arg2
 
-    # return gpt_address_line,gpt_address_line2, line, gpt_lines,rop_chain  
+    return gpt_address_line, line, gpt_lines,rop_chain,variable_name  
 
 if __name__ == "__main__":
     generate_shellcode_chain(parser.parse_args())
