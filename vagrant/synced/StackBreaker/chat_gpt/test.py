@@ -4,7 +4,6 @@ import subprocess
 
 call_count = 0
 
-
 def main(file_name,asm_gadget):
     eax = asm_generator.assembly_generator(file_name)
     chain = translate_asm_gadget(asm_gadget)
