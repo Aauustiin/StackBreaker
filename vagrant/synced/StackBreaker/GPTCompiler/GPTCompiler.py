@@ -89,10 +89,12 @@ class GPTCompiler:
             elif copy:
                 buffer.write(response_line + '\n')
 
-        chain = buffer.getvalue()
-        lines = chain.splitlines()
-        chain = [line.split()[0] for line in lines]
-        rop_chain = pack_chain(chain)
+        buffer = buffer.getvalue()
+        lines = buffer.splitlines()
+
+        buffer = [line.split()[0] for line in lines]
+        print(buffer)
+        rop_chain = pack_chain(buffer)
 
         return rop_chain
 
