@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/local/bin/python3
 
 from Shellcode_Chain_Generator import generate_shellcode_chain
 from GPTCompiler.Shell_coder import generate_shellcode_chain
