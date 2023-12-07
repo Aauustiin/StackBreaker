@@ -63,7 +63,7 @@ def reads(file_name, data_address, data_values):
                         data = data.strip()
                         label_address_map[label] = current_address
                         if 'db' in data or 'dw' in data or 'dd' in data or 'dq' in data or 'dt' in data:
-                            items, current_address = parse_assembly_line(data, current_address)
+                            items, current_address = parse_assembly_line(data, current_address,label_address_map)
                             for item in items:
                                 data_values.append(item)
                         elif 'equ' in data:
@@ -100,6 +100,10 @@ def parse_out_rop(path: Path):
         ": inc ebx ; ret": None,
         ": inc ecx ; ret": None,
         ": inc edx ; ret": None,
+        ": dec eax ; ret": None,
+        ": dec ebx ; ret": None,
+        ": dec ecx ; ret": None,
+        ": dec edx ; ret": None,
         ": pop ebx ; ret": None,
         ": pop ecx ; ret": None,
         ": pop ecx ; pop ebx ; ret": None,
@@ -203,6 +207,22 @@ def readinstructions(gpt_compiler, file_name, data_address, data_values, content
                 if gpt_required == True:
                     gpt(gpt_compiler, parts[0], parts[1], data_values, contents, rop_chain, gadgets, register_info,
                         null, line, gpt_lines)
+                    
+            elif 'inc' in line:
+                parts = line.split()
+                if len(parts) > 1:
+                    arg1 = parts[1].rstrip(',')
+                    rop_chain, gpt_required, register_info = inc(arg1, rop_chain, gadgets, register_info,gpt_required)
+                    if gpt_required == True:
+                        gpt(gpt_compiler, arg1, None, data_values, contents, rop_chain, gadgets, register_info,null, line, gpt_lines)
+
+            elif 'dec' in line:
+                parts = line.split()
+                if len(parts) > 1:
+                    arg1 = parts[1].rstrip(',')
+                    rop_chain, gpt_required, register_info = inc(arg1, rop_chain, gadgets, register_info,gpt_required)
+                    if gpt_required == True:
+                        gpt(gpt_compiler, arg1, None, data_values, contents, rop_chain, gadgets, register_info,null, line, gpt_lines)
 
             else:
                 parts = line.split()
@@ -291,6 +311,64 @@ def mov(ar1, ar2, data_values, contents, rop_chain, gadgets, register_info, null
             gpt_required = True
 
     return rop_chain, register_info, gpt_required
+
+def inc(ar1, rop_chain, gadgets, register_info,gpt_required):
+    if ar1 in ['ebx', 'ecx', 'edx', 'eax']:
+                if (ar1 == 'ecx'):
+                    if ": inc ecx ; ret" in gadgets:
+                        rop_chain += pack('<I', gadgets[": inc ecx ; ret"])
+                        register_info[ar1] = register_info[ar1] + 1
+                    else:
+                        gpt_required = True
+                elif (ar1 == 'ebx'):
+                    if ": inc ebx ; ret" in gadgets:
+                        rop_chain += pack('<I', gadgets[": inc ebx ; ret"])
+                        register_info[ar1] = register_info[ar1] + 1
+                    else:
+                        gpt_required = True
+                elif (ar1 == 'eax'):
+                    if ": inc eax ; ret" in gadgets:
+                        rop_chain += pack('<I', gadgets[": inc eax ; ret"])
+                        register_info[ar1] = register_info[ar1] + 1
+                    else:
+                        gpt_required = True
+                elif (ar1 == 'edx'):
+                    if ": inc esx ; ret" in gadgets:
+                        rop_chain += pack('<I', gadgets[": inc edx ; ret"])
+                        register_info[ar1] = register_info[ar1] + 1
+                    else:
+                        gpt_required = True
+    return rop_chain, gpt_required, register_info
+
+def dec(ar1, rop_chain, gadgets, register_info,gpt_required):
+    if ar1 in ['ebx', 'ecx', 'edx', 'eax']:
+                if (ar1 == 'ecx'):
+                    if ": dec ecx ; ret" in gadgets:
+                        rop_chain += pack('<I', gadgets[": dec ecx ; ret"])
+                        register_info[ar1] = register_info[ar1] + 1
+                    else:
+                        gpt_required = True
+                elif (ar1 == 'ebx'):
+                    if ": dec ebx ; ret" in gadgets:
+                        rop_chain += pack('<I', gadgets[": dec ebx ; ret"])
+                        register_info[ar1] = register_info[ar1] + 1
+                    else:
+                        gpt_required = True
+                elif (ar1 == 'eax'):
+                    if ": dec eax ; ret" in gadgets:
+                        rop_chain += pack('<I', gadgets[": dec eax ; ret"])
+                        register_info[ar1] = register_info[ar1] + 1
+                    else:
+                        gpt_required = True
+                elif (ar1 == 'edx'):
+                    if ": dec esx ; ret" in gadgets:
+                        rop_chain += pack('<I', gadgets[": dec edx ; ret"])
+                        register_info[ar1] = register_info[ar1] + 1
+                    else:
+                        gpt_required = True
+                else:
+                        gpt_required = True
+    return rop_chain, gpt_required, register_info
 
 
 def xor(ar1, ar2, data_values, contents, rop_chain, gadgets, register_info, null,gpt_required):
@@ -424,7 +502,7 @@ def removeNone(gadgets):
     return gadgets
 
 
-def parse_assembly_line(data_line, current_address):
+def parse_assembly_line(data_line, current_address,label_address_map):
     # Determine the directive used (db, dw, dd, dq, dt)
     directive_match = re.search(r'db|dw|dd|dq|dt', data_line)
     if not directive_match:
@@ -444,6 +522,9 @@ def parse_assembly_line(data_line, current_address):
     bytes_per_item = {'db': 1, 'dw': 2, 'dd': 4, 'dq': 8, 'dt': 10}.get(directive, 1)
     for i in range(len(processed_items)):
         if (processed_items[i] == '0'):
+            total_bytes = 4
+            current_address += total_bytes
+        elif(processed_items[i] in label_address_map):
             total_bytes = 4
             current_address += total_bytes
         else:
