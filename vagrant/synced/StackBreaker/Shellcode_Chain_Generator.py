@@ -56,7 +56,7 @@ def reads(file_name,data_address,data_values):
                         data = data.strip()
                         label_address_map[label] = current_address 
                         if 'db' in data or 'dw' in data or 'dd' in data or 'dq' in data or 'dt' in data:
-                            items, current_address = parse_assembly_line(data, current_address)
+                            items, current_address = parse_assembly_line(data, current_address,label_address_map)
                             for item in items:
                                 data_values.append(item)
                         elif 'equ' in data:
@@ -420,7 +420,7 @@ def removeNone(gadgets):
             del gadgets[key]
     return gadgets
 
-def parse_assembly_line(data_line,current_address):
+def parse_assembly_line(data_line,current_address,label_address_map):
     # Determine the directive used (db, dw, dd, dq, dt)
     directive_match = re.search(r'db|dw|dd|dq|dt', data_line)
     if not directive_match:
@@ -440,6 +440,9 @@ def parse_assembly_line(data_line,current_address):
     bytes_per_item = {'db': 1, 'dw': 2, 'dd': 4, 'dq': 8, 'dt': 10}.get(directive, 1)
     for i in range(len(processed_items)):
         if(processed_items[i] == '0'):
+            total_bytes = 4
+            current_address += total_bytes
+        elif(processed_items[i] in label_address_map):
             total_bytes = 4
             current_address += total_bytes
         else: 
