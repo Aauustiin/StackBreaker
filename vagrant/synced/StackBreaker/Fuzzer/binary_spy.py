@@ -38,7 +38,7 @@ def getVulnNodes() -> List:
 
     return vulnNodes
 
-def getPath2Node(target) -> List[int]:
+def getPath2Node(target, ouside_calls=False, pp=False) -> List[int]:
     mainNode = cfg.get_any_node(mainAddr)
 
     vis = []
@@ -75,10 +75,25 @@ def getPath2Node(target) -> List[int]:
                     queue.append(new_path)
 
     addrPath = [n.addr for n in nodePath]
-    for addr in addrPath:
-        block = cfg.get_any_node(addr).block
-        if block == None:
-            addrPath.remove(addr)
+
+    if not ouside_calls:
+        for addr, node in zip(addrPath, nodePath):
+            block = cfg.get_any_node(addr).block
+            if block == None:
+                addrPath.remove(addr)
+                nodePath.remove(node)
+
+    if pp:
+        for node in nodePath:
+            blk = node.block
+            if blk:
+                blk.pp()
+            else:
+                print(f'Block not in scope @ {hex(node.addr)}')
+
+            print('    >        >')
+
+
     return addrPath
 
 def trace(startAddr: int, file: Path=None) -> List[int]:

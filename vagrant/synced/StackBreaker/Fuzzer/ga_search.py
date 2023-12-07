@@ -107,8 +107,6 @@ def freshenPop(pop:list, genome_len, alphabet):
 
     return pop
 
-    
-
 def writeFitness(pop, gen):
     fitness = [i['fitness'] for i in pop]
     solutions = [i['solution'] for i in pop]
@@ -118,11 +116,6 @@ def writeFitness(pop, gen):
           )
     print(f'Average solution length: {statistics.median([len(s) for s in solutions])}')
     print(f'Best solution:\n<{pop[0]["solution"]}>')
-
-    # sample = random.sample(solutions, 5)
-    # print('Sample solutions:')
-    # for i, s in enumerate(sample):
-    #     print(f'{i+1}: <{s}>')
 
     print()
 

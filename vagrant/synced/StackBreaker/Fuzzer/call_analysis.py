@@ -1,6 +1,5 @@
 import subprocess as subp
 import re
-import sys
 
 from typing import List, Tuple, Dict
 
