@@ -1,5 +1,5 @@
 run
-break *0x56555843
+break *0x56555822
 run fuzz
 while 1
   stepi

@@ -5,6 +5,7 @@ import ga_search
 
 import sys
 from pathlib import Path
+import string
 
 program = Path(sys.argv[1])
 
@@ -29,12 +30,17 @@ def findFuzzing():
     # print([hex(a) for a in exeTrace])
     # exeTrace = binary_spy.trace(binary_spy.mainAddr, '../Examples/bad_input')
     # print([hex(a) for a in exeTrace])
-    print(f'found {len(paths2Nodes)} possible targets')
+    print(f'Found {len(paths2Nodes)} possible target(s)')
 
     for target in paths2Nodes:
-        gen, best = ga_search.run_the_ga(target, pop_size=10, tournament_size=2, genome_length=(5, 1024))
+        alphabet = string.ascii_letters + '\n'
+        gen, best = ga_search.run_the_ga(target, pop_size=50, tournament_size=3, 
+                                         genome_length=(5, 200), alphabet=alphabet)
 
         print(f'Found solution in {gen} generations:\n {best["solution"]}\n')
+
+
+
 
 findFuzzing()
 

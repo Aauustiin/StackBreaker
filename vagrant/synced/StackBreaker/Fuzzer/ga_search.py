@@ -40,20 +40,6 @@ def tournament(pop, tournament_size):
 
     return winner['solution']
 
-# def cross(mum: str, dad: str):
-#     offspring_len = math.ceil( (len(mum)+ len(dad)) / 2)
-
-#     larger_parent = mum
-#     smaller_parent = dad
-#     if len(mum) < len(dad):
-#         larger_parent = dad
-#         smaller_parent = mum
-
-#     point = random.randrange(offspring_len)
-#     offspring = smaller_parent[:point] + larger_parent[point:offspring_len]
-    
-#     return offspring
-
 def cross(mum: str, dad: str):
     offspring_len = math.ceil( (len(mum)+ len(dad)) / 2)
 
@@ -62,14 +48,14 @@ def cross(mum: str, dad: str):
     for m,d in zip(mum, dad):
         i += 1
         if random.choice([True, False]):
-            offsping.join(m)
+            offsping += m
         else:
-            offsping.join(d)
+            offsping += d
 
     if len(mum) > len(dad):
-        offsping.join(mum[i:offspring_len])
+        offsping += mum[i:offspring_len]
     else:
-        offsping.join(dad[i:offspring_len])
+        offsping += dad[i:offspring_len]
 
     return offsping
 
@@ -91,33 +77,45 @@ def breed(pop, tournament_size, crossover):
     return offspring_pop
 
 
-def mutate(pop, temp,  alphabet):
+def mutate(pop,alphabet):
     for i in pop[1:]:
         length = len(i['solution'])
         for j in range(length):
-            mutation = (1/length) * temp
+            mutation = 1/length
             if random.random() < mutation:
                 i['solution'] = i['solution'][:j] + random.choice(alphabet)\
                                 + i['solution'][j:]
                 
     return pop
-
-def calculateTemerature(top_fitness):
+    
+def checkStagnation(top_fitness):
     length = len(top_fitness)
-    if length < 3: return 1
+    if length < 3: return False
     if top_fitness[-1] == top_fitness[-2] and top_fitness[-2] == top_fitness[-3]:
-        return 2
+        return True
+    return False
+
+def freshenPop(pop:list, genome_len, alphabet):
+    popLen = len(pop)
+    bestSolLen = len(pop[0]['solution'])
+    sameLenPop = initialisePop(int(popLen/4), (bestSolLen, bestSolLen+1), alphabet)
+    randLenPop = initialisePop(int(popLen/4), genome_len, alphabet)
+
+    pop = pop[:popLen - int(popLen/4)*2].copy()
+    pop.extend(sameLenPop)
+    pop.extend(randLenPop)
+
+    return pop
+
     
 
 def writeFitness(pop, gen):
     fitness = [i['fitness'] for i in pop]
-
     solutions = [i['solution'] for i in pop]
 
-    max_diff = fitness[0] - fitness[-1]
-    med_diff = fitness[0] - fitness[int(len(pop)/2)]
-
-    print(f'Gen {gen}: max fit - {fitness[0]}, min fit - {fitness[-1]}, mean - {statistics.mean(fitness)}, stdev - {statistics.stdev(fitness)}, max diff - {max_diff} ,min diff - {med_diff}')
+    print('Gen {:4d}: max fit - {:.3f}, min fit - {:.3f}, mean - {:.3f}, stdev - {:.3f}'\
+          .format(gen, fitness[0], fitness[-1], statistics.mean(fitness), statistics.stdev(fitness))
+          )
     print(f'Average solution length: {statistics.median([len(s) for s in solutions])}')
     print(f'Best solution:\n<{pop[0]["solution"]}>')
 
@@ -142,10 +140,11 @@ def run_the_ga(target, alphabet=alphabet, pop_size=50, genome_length=(5,1024), t
     best = pop[0]
     top_fitenss = [best['fitness']]
     while generation < max_gen and best['fitness'] < 1:
-        generation += 1
         pop = breed(pop, tournament_size, crossover)
-        temp = calculateTemerature(top_fitenss)
-        pop = mutate(pop, temp, alphabet)
+        pop = mutate(pop, alphabet)
+        if checkStagnation(top_fitenss):
+            pop = freshenPop(pop, genome_length ,alphabet)
+        generation += 1
         pop = assess(pop, target)
         best = pop[0]
         top_fitenss.append(best['fitness'])
@@ -154,3 +153,8 @@ def run_the_ga(target, alphabet=alphabet, pop_size=50, genome_length=(5,1024), t
             writeFitness(pop, generation)
 
     return generation, best  
+
+def get_random_string(min, max):
+    length = random.randrange(min, max)
+    ret = ''.join(random.choice(alphabet) for _ in range(length))
+    return ret

@@ -33,6 +33,8 @@ int main(int argc, char *argv[]) {
     }
     fread(buffer, 699, 1, file);
     fclose(file);
+    if (strlen(buffer) < 100) {
     decide(buffer);
+    }
     return(0);
 }

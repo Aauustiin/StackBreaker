@@ -15,6 +15,7 @@ char* process_input(char *buf) {
                     newbuf[j++]=buf[i];
             }
         }
+    else return 0;
 
     if(j > i) {
         strcpy(newbuf, buf);
