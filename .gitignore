@@ -10,3 +10,5 @@ vagrant/synced/StackBreaker/.idea/*
 
 # ignore pylance stuff
 __pycache__
+
+# ignore the python folder
