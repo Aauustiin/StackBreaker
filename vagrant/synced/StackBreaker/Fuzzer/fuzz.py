@@ -1,5 +1,3 @@
-#!/usr/local/bin/python3
-
 import binary_spy
 import ga_search
 from binary_spy import vuln
