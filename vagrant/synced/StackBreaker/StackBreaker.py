@@ -27,7 +27,7 @@ parser.add_argument("--padding", default=False, type=bool)
 parser.add_argument("--fuzz", default=False, type=bool)
 parser.add_argument("--drawCFG", default=False, type=bool)
 parser.add_argument("--drawCFG_simple", default=False, type=bool)
-parser.add_argument("--printPath2Vuln", default=False, type=bool)
+parser.add_argument("--printCFGPath", default=False, type=bool)
 parser.add_argument("--printCallPath", default=False, type=bool)
 
 parser.add_argument("--test", default=False, type=bool)
@@ -68,7 +68,7 @@ def main(args):
         fuzzer.drawCFG(complex=False)
         sys.exit(0)
 
-    if args.printPath2Vuln:
+    if args.printCFGPath:
         fuzzer.program = args.program
         fuzzer.printPath2Vuln()
         sys.exit(0)
