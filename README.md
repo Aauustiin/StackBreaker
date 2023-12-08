@@ -82,8 +82,8 @@ First, navigate into vagrant/synced/StackBreaker. From here StackBreaker can be 
 Below are some example StackBreaker calls made inside the provided vagrant machine to illustrate how to use the provided flags:
 - `python3 StackBreaker.py --program=<PATH> --padding=True`
     - Runs StackBreaker with just the padding finder on the target binary.
-- `python3 StackBreaker.py --program<PATH> --padding=True --end-to-end=True --command="\bin\sh"`
-    - Runs the execve exploit generator with the "\bin\sh" command, and runs the exploit on the target binary.
+- `python3 StackBreaker.py --program<PATH> --padding=True --end-to-end=True --command="/bin/sh"`
+    - Runs the execve exploit generator with the "/bin/sh" command, and runs the exploit on the target binary.
 - `python3 StackBreaker.py --program<PATH> --padding=True --end-to-end=True --assembly=True --input=<PATH>`
     - Runs the assembly to ROP chain generator with provided input, and runs the exploit on the target binary.
 - `python3 StackBreaker.py --program<PATH> --padding=True --test=True --api-key=<KEY>`
@@ -133,3 +133,9 @@ If you are running Windows, or your virtual provider is HyperV, you may need to 
 config.vm.synced_folder "./synced", "/home/vagrant/synced", type:"nfs", nfs_udp:false
 ```
 from `Vagrantfile`
+
+---
+
+### Python 3.10
+
+The fuzzing part of StackBreaker requires `angr` to work, which in turn requires Python 3.10. In `python3 --version` does not return `Python 3.10.13`, it may need to be compiled from source manually.
