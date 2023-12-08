@@ -1,6 +1,15 @@
 # StackBreaker
 
+_Binary dance starts,_\
+_Ropes entwine in code ballet,_\
+_Stacks break, chains advance._ \
+ _&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-ChatGPT_
+&nbsp;\
+&nbsp;
+
 StackBreaker is an automatic exploit generation tool (AEG) based on return oriented programming (ROP).
+
+**Kind notice** &nbsp;An OpenAi API key has been included in the code with credit of 1£. Please note that any time StackBreaker is run with the `--gpt`,&nbsp;`--gpt-assembly`, &nbsp;or `--test`&nbsp; flags credit is used up.  
 
 ## System Requirements
 
