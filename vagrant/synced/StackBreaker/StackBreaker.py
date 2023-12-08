@@ -1,11 +1,13 @@
 #!/usr/local/bin/python3
 
+from GPTCompiler.Shell_coder import generate_shellcode_chain as gpt_shellcode_gen
 from Shellcode_Chain_Generator import generate_shellcode_chain
-from GPTCompiler.Shell_coder import generate_shellcode_chain
 from PaddingFinder.padding_finder import getPaddingLength
 from Execve_Chain_Generator import generate_execve_chain
+from GPTCompiler.test import main as compile_test
 from Function_Extractor import extract_functions
 from GPTCompiler.GPTCompiler import gpt_compile
+from Fuzzer import fuzz as fuzzer
 
 import os
 import sys
@@ -23,6 +25,10 @@ parser.add_argument("--out-rop-path", default=None)
 
 parser.add_argument("--padding", default=False, type=bool)
 parser.add_argument("--fuzz", default=False, type=bool)
+parser.add_argument("--drawCFG", default=False, type=bool)
+parser.add_argument("--drawCFG_simple", default=False, type=bool)
+parser.add_argument("--printPath2Vuln", default=False, type=bool)
+parser.add_argument("--printCallPath", default=False, type=bool)
 
 parser.add_argument("--test", default=False, type=bool)
 parser.add_argument("--end-to-end", default=False, type=bool)
@@ -41,17 +47,40 @@ parser.add_argument("--gpt-assembly", default=False, type=bool)
 
 
 def main(args):
-    if (args.Program is None) or (not os.path.exists(args.Program)):
+
+    if (args.program is None) or (not os.path.exists(args.program)):
         print("Invalid arguments. A path to a target program must be specified. "
               "E.g python StackBreaker.py --program=<PATH>")
         sys.exit()
 
     if args.fuzz:
-        print("We'll call fuzzing stuff here")
-        # TODO: Call fuzzing
+        fuzzer.program = args.program
+        fuzzer.findFuzzing()
+        sys.exit(0)
+
+    if args.drawCFG:
+        fuzzer.program = args.program
+        fuzzer.drawCFG()
+        sys.exit(0)
+
+    if args.drawCFG_simple:
+        fuzzer.program = args.program
+        fuzzer.drawCFG(complex=False)
+        sys.exit(0)
+
+    if args.printPath2Vuln:
+        fuzzer.program = args.program
+        fuzzer.printPath2Vuln()
+        sys.exit(0)
+
+    if args.printCallPath:
+        fuzzer.program = args.program
+        fuzzer.printCallPath()
+        sys.exit(0)
+        
     elif args.padding or args.end_to_end:
         print("Finding padding...")
-        padding = getPaddingLength(args.program)[0]
+        padding = getPaddingLength(args.program, verbose=True)[0]
         print("Padding found!\n\n" + str(padding))
 
     if (args.out_rop_path is None) or (not os.path.exists(args.out_rop_path)):
@@ -81,8 +110,12 @@ def main(args):
     print("Functions and .data address extracted!")
 
     if args.test:
-        # TODO: Call testing stuff
-        print("abav")
+        print("Starting testing...")
+        succ, fail = compile_test(padding, args.out_rop_path)
+        print("Testing completed!")
+        print("Success Rate: " + str(succ))
+        print("Failure Rate: " + str(fail))
+        
 
     exploit_path = None
 
@@ -105,16 +138,16 @@ def main(args):
             gadgets = file.read()
             with open(args.input, 'r') as input_file:
                 shellcode = input_file.read()
-                gpt_compile(gadgets, shellcode, "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", padding)
+                exploit_path = gpt_compile(gadgets, shellcode, "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", padding)
     elif args.gpt_assembly:
         if args.input is None:
             print("Error: Missing input, provide a path to a file with python StackBreaker.py --input=<PATH>")
             sys.exit()
-        with open(args.input, 'r') as input_file:
-            shellcode = input_file.read()
-            generate_shellcode_chain(padding, args.out_rop_path, shellcode)
+        # with open(args.input, 'r') as input_file:
+        #     shellcode = input_file.read()
+        exploit_path = gpt_shellcode_gen(padding, args.out_rop_path, args.input)
 
-    if args.endtoend:
+    if args.end_to_end:
         if exploit_path is None:
             print("Error: No exploit available to run with the target program. "
                   "Either no exploit generation method was specified, or exploit generation failed.")

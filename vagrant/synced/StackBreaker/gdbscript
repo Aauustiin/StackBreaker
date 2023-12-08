@@ -1,0 +1,7 @@
+run
+break *0x5655574c
+run fuzz
+while 1
+  stepi
+end
+quit

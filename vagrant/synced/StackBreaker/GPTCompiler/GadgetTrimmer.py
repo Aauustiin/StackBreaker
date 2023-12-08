@@ -1,4 +1,3 @@
-import tiktoken
 from io import StringIO
 from collections import Counter
 import string
@@ -40,11 +39,7 @@ def rare_token_trim(in_gadgets: str, whitelist, required_tokens: int) -> str:
     rare_tokens = sorted(token_counts.items(), key=lambda item: item[1])
     rare_tokens = [pair[0] for pair in rare_tokens]
 
-    enc = tiktoken.encoding_for_model("gpt-4-1106-preview")
-
     # TODO: Do binary search to trim to required number of tokens
-
-    print(len(enc.encode(in_gadgets)))
 
     out_gadgets = StringIO()
     for assembly_line, line in zip(assembly_lines, in_lines):
@@ -52,8 +47,6 @@ def rare_token_trim(in_gadgets: str, whitelist, required_tokens: int) -> str:
             out_gadgets.write(line + '\n')
 
     out_gadgets = out_gadgets.getvalue()
-
-    print(len(enc.encode(out_gadgets)))
 
     return out_gadgets
 

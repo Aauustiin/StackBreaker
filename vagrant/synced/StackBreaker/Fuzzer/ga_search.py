@@ -1,4 +1,4 @@
-import binary_spy
+import Fuzzer.binary_spy as binary_spy
 
 import random
 import math

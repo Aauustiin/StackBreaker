@@ -1,7 +1,7 @@
 from openai import OpenAI
-from GadgetTrimmer import *
+from GPTCompiler.GadgetTrimmer import *
 from io import StringIO
-from chain_pack import pack_chain
+from GPTCompiler.chain_pack import pack_chain
 
 
 class GPTCompiler:

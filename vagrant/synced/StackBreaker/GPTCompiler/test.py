@@ -1,39 +1,32 @@
-import asm_generator
-import chain_pack
+import GPTCompiler.asm_generator as asm_generator
+import GPTCompiler.chain_pack as chain_pack
 import subprocess
+from GPTCompiler.Shell_coder import generate_shellcode_chain
 
 call_count = 0
 
-def main(file_name,asm_gadget):
-    eax = asm_generator.assembly_generator(file_name)
-    chain = translate_asm_gadget(asm_gadget)
-    rop_chain = chain_pack.pack_chain(chain)
+def main(padding, out_rop_path):
+    checkcounter = 0
+    for _ in range(1):
+        eax = asm_generator.assembly_generator("GPTCompiler/eax.s")
+        rop_file = generate_shellcode_chain(padding, out_rop_path, "GPTCompiler/eax.s")
 
-    file_path = "rop_chain"
-    try:
-        with open(file_path, 'wb') as file:  # 'xb' mode for creating and writing in binary
-            file.write(rop_chain)
-    except FileExistsError:
-        print(f"The file '{file_path}' already exists.")
-
-    output, error = run_command('./vuln3-32 rop_chain')  # Replace 'ls' with your command
-    print("Output:", output)
-    print("Error:", error if error else "No Error") 
-    check = checkoutput(eax,output)
-    if check == True:
-        checkcounter += 1
+        output, error = run_command('./vuln3-32 ' + rop_file)  # Replace 'ls' with your command
+        print("Output:", output)
+        print("Error:", error if error else "No Error") 
+        check = checkoutput(eax,output)
+        if check == True:
+            checkcounter += 1
     success, failure = calculate_success(checkcounter,call_count)
+    return success, failure
 
-    return file_path
-
-# def translate_asm_gadget(asm_gadget):
 
 def checkoutput(eax,output):
     global call_count
     # Increment the counter each time the function is called
     call_count += 1
 
-    if eax == output:
+    if str(eax) in output:
         check = True
         return check
     else:

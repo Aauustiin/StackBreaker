@@ -1,13 +1,12 @@
-import binary_spy
-import ga_search
-from binary_spy import vuln
-from call_analysis import CallGraph
+import Fuzzer.binary_spy as binary_spy
+import Fuzzer.ga_search as ga_search
+from Fuzzer.binary_spy import vuln
+from Fuzzer.call_analysis import CallGraph
 
-import sys
 from pathlib import Path
 import string
 
-program = Path(sys.argv[1])
+program: Path
 
 def findFuzzing():
     binary_spy.initialise(program)

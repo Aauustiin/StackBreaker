@@ -4,7 +4,7 @@ import re
 import argparse
 from pathlib import Path
 from struct import pack
-from GPTCompiler import GPTCompiler
+from GPTCompiler.GPTCompiler import GPTCompiler
 from io import StringIO
 
 import Extracted_Functions
@@ -317,25 +317,25 @@ def inc(ar1, rop_chain, gadgets, register_info,gpt_required):
                 if (ar1 == 'ecx'):
                     if ": inc ecx ; ret" in gadgets:
                         rop_chain += pack('<I', gadgets[": inc ecx ; ret"])
-                        register_info[ar1] = register_info[ar1] + 1
+                        # register_info[ar1] = register_info[ar1] + 1
                     else:
                         gpt_required = True
                 elif (ar1 == 'ebx'):
                     if ": inc ebx ; ret" in gadgets:
                         rop_chain += pack('<I', gadgets[": inc ebx ; ret"])
-                        register_info[ar1] = register_info[ar1] + 1
+                        # register_info[ar1] = register_info[ar1] + 1
                     else:
                         gpt_required = True
                 elif (ar1 == 'eax'):
                     if ": inc eax ; ret" in gadgets:
                         rop_chain += pack('<I', gadgets[": inc eax ; ret"])
-                        register_info[ar1] = register_info[ar1] + 1
+                        # register_info[ar1] = register_info[ar1] + 1
                     else:
                         gpt_required = True
                 elif (ar1 == 'edx'):
                     if ": inc esx ; ret" in gadgets:
                         rop_chain += pack('<I', gadgets[": inc edx ; ret"])
-                        register_info[ar1] = register_info[ar1] + 1
+                        # register_info[ar1] = register_info[ar1] + 1
                     else:
                         gpt_required = True
     return rop_chain, gpt_required, register_info
@@ -345,25 +345,25 @@ def dec(ar1, rop_chain, gadgets, register_info,gpt_required):
                 if (ar1 == 'ecx'):
                     if ": dec ecx ; ret" in gadgets:
                         rop_chain += pack('<I', gadgets[": dec ecx ; ret"])
-                        register_info[ar1] = register_info[ar1] + 1
+                        # register_info[ar1] = register_info[ar1] + 1
                     else:
                         gpt_required = True
                 elif (ar1 == 'ebx'):
                     if ": dec ebx ; ret" in gadgets:
                         rop_chain += pack('<I', gadgets[": dec ebx ; ret"])
-                        register_info[ar1] = register_info[ar1] + 1
+                        # register_info[ar1] = register_info[ar1] + 1
                     else:
                         gpt_required = True
                 elif (ar1 == 'eax'):
                     if ": dec eax ; ret" in gadgets:
                         rop_chain += pack('<I', gadgets[": dec eax ; ret"])
-                        register_info[ar1] = register_info[ar1] + 1
+                        # register_info[ar1] = register_info[ar1] + 1
                     else:
                         gpt_required = True
                 elif (ar1 == 'edx'):
                     if ": dec esx ; ret" in gadgets:
                         rop_chain += pack('<I', gadgets[": dec edx ; ret"])
-                        register_info[ar1] = register_info[ar1] + 1
+                        # register_info[ar1] = register_info[ar1] + 1
                     else:
                         gpt_required = True
                 else:
@@ -580,7 +580,8 @@ def gpt(gpt_compiler, arg1, arg2, data_values, contents, rop_chain, gadgets, reg
         print(formatted_line)
         print("-----")
 
-        rop_chain += gpt_compiler.compile_line(formatted_line, gpt_lines.getvalue())
+        if formatted_line != "":
+            rop_chain += gpt_compiler.compile_line(formatted_line, gpt_lines.getvalue())
     return gpt_address_line, line, gpt_lines, rop_chain, variable_name
 
 

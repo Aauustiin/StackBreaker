@@ -2,11 +2,16 @@ global _start
 section .text
 _start:
     mov eax, 0
-    inc eax               ; Decrements EAX by 1
-    inc eax               ; Decrements EAX by 1
-    inc eax               ; Performs bitwise NOT on EAX
-    inc eax               ; Negates the value in EAX (two's complement negation)
-    inc eax               ; Increments EAX by 1
+      
+    dec eax               ; Decrements EAX by 1
+      
+    and eax, 0xFF         ; Performs bitwise AND on EAX with 0xFF
+      
+    xor eax, 0xFF         ; Performs bitwise XOR on EAX with 0xFF
+      
+    sub eax, 5            ; Subtracts 5 from EAX
+      
+    and eax, 0xFF         ; Performs bitwise AND on EAX with 0xFF
     mov ebx, data       ; Get the address of the .data section
     mov [ebx], eax      ; Store the value of EAX at .data
     mov eax, 4          ; System call number for 'write'
