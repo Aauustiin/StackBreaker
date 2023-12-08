@@ -12,7 +12,9 @@ int b(int i) {
 
 int a(char *s) {
     char buf[32];
-    strcpy(buf, s);
+    if(strlen(s) > 64) {
+        strcpy(buf, s);
+    }
     printf("in func a\n");
     return 0;
 }
