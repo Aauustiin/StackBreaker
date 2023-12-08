@@ -80,23 +80,56 @@ First, navigate into vagrant/synced/StackBreaker. From here StackBreaker can be 
 | --printCallPath | When True, prints the call path from main to the vulnerable function. |
 
 Below are some example StackBreaker calls made inside the provided vagrant machine to illustrate how to use the provided flags:
-- `python StackBreaker.py --program=<PATH> --padding=True`
+- `python3 StackBreaker.py --program=<PATH> --padding=True`
     - Runs StackBreaker with just the padding finder on the target binary.
-- `python StackBreaker.py --program<PATH> --padding=True --end-to-end=True --command="\bin\sh"`
+- `python3 StackBreaker.py --program<PATH> --padding=True --end-to-end=True --command="\bin\sh"`
     - Runs the execve exploit generator with the "\bin\sh" command, and runs the exploit on the target binary.
-- `python StackBreaker.py --program<PATH> --padding=True --end-to-end=True --assembly=True --input=<PATH>`
+- `python3 StackBreaker.py --program<PATH> --padding=True --end-to-end=True --assembly=True --input=<PATH>`
     - Runs the assembly to ROP chain generator with provided input, and runs the exploit on the target binary.
-- `python StackBreaker.py --program<PATH> --padding=True --test=True --api-key=<KEY>`
+- `python3 StackBreaker.py --program<PATH> --padding=True --test=True --api-key=<KEY>`
     - Runs the automated testing pipeline for the GPT-assisted compiler, on the target binary. Uses a provided API key.
-- `python StackBreaker.py --program<PATH> --padding=True --GPT=True --end-to-end=True --input=<PATH>`
+- `python3 StackBreaker.py --program<PATH> --padding=True --GPT=True --end-to-end=True --input=<PATH>`
     - Runs the GPT shellcode compiler on the provided input, runs the exploit on the target program, uses the default API key.
-- `python StackBreaker.py --program<PATH> --fuzz=True`
+- `python3 StackBreaker.py --program<PATH> --fuzz=True`
     - Runs the mutational fuzzer on the target binary.
-- `python StackBreaker.py --program<PATH> --drawCFG=True`
+- `python3 StackBreaker.py --program<PATH> --drawCFG=True`
     - Outputs an image of the control flow dependency graph.
-- `python StackBreaker.py --program<PATH> --printCFGPath=True`
+- `python3 StackBreaker.py --program<PATH> --printCFGPath=True`
     - Prints the shortest possible execution trace between the main function and the and the vulnerable function.
-- `python StackBreaker.py --program<PATH> --drawCFG_simple=True`
+- `python3 StackBreaker.py --program<PATH> --drawCFG_simple=True`
     - Outputs the image of a simplified control flow dependency graph.
-- `python StackBreaker.py --program<PATH> --printCallPath=True`
+- `python3 StackBreaker.py --program<PATH> --printCallPath=True`
     - Prints the call path from main to the vulnerable function for the target binary.
+
+## Troubleshooting
+### vagrant synced folder
+    
+If the `synced` folder can not mount during `vagrant up` you may need to comment the lines
+```
+cd synced
+# install python3.10
+cd Python-3.10.13
+sudo make install
+cd ..
+#install ROPgadget
+cd ROPgadget-master
+sudo -H python3 -m pip install ROPgadget
+cd ..
+#install netcat
+cd netcat-0.7.1
+./configure
+make
+cp src/netcat /tmp/nc
+cd
+```
+from `setup_vagrant.sh` and try executing them manually.
+
+---
+
+### Unrecognised NFS
+
+If you are running Windows, or your virtual provider is HyperV, you may need to comment the line 
+```
+config.vm.synced_folder "./synced", "/home/vagrant/synced", type:"nfs", nfs_udp:false
+```
+from `Vagrantfile`

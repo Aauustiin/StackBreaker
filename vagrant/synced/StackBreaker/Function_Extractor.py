@@ -1,6 +1,6 @@
 from pathlib import Path
 from io import StringIO
-
+import sys
 
 def extract_functions(out_rop_path):
     execve_syscall_function = StringIO()
@@ -56,6 +56,10 @@ def extract_functions(out_rop_path):
             if "mov" in line:
                 null_buffer = execve_buffer
                 execve_buffer = StringIO()
+
+    if data_address == 0:
+        print('Error: ROPgadget exploit generation unsuccesful')
+        sys.exit(1)
 
     push_bytes_function.seek(0)
     push_ptr_function = StringIO()

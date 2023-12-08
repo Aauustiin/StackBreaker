@@ -24,7 +24,7 @@ def findFuzzing():
 
     for target in paths2Nodes:
         alphabet = string.ascii_letters + '\n'
-        gen, best = ga_search.run_the_ga(target, pop_size=50, tournament_size=3, 
+        gen, best = ga_search.run_the_ga(target, pop_size=10, tournament_size=3, 
                                          genome_length=(5, 200), alphabet=alphabet)
 
         print(f'Found solution in {gen} generations:\n {best["solution"]}\n')

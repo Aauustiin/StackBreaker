@@ -45,8 +45,16 @@ parser.add_argument("--api-key", default="sk-NIxpwmEoaFZW9TcM6SeQT3BlbkFJ8aRCy6n
 parser.add_argument("--gpt", default=False, type=bool)
 parser.add_argument("--gpt-assembly", default=False, type=bool)
 
+def clean():
+    tempFiles = ['out-rop.txt', 'Evil', 'exploit', 'padding', 'gdbscript']
+
+    for f in tempFiles:
+        if os.path.isfile(f):
+            os.remove(f)
 
 def main(args):
+
+    clean()
 
     if (args.program is None) or (not os.path.exists(args.program)):
         print("Invalid arguments. A path to a target program must be specified. "
@@ -136,9 +144,7 @@ def main(args):
             sys.exit()
         with open(args.out_rop_path, 'r') as file:
             gadgets = file.read()
-            with open(args.input, 'r') as input_file:
-                shellcode = input_file.read()
-                exploit_path = gpt_compile(gadgets, shellcode, "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", padding)
+            exploit_path = gpt_compile(gadgets, args.input, "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", padding)
     elif args.gpt_assembly:
         if args.input is None:
             print("Error: Missing input, provide a path to a file with python StackBreaker.py --input=<PATH>")

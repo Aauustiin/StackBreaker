@@ -3,15 +3,15 @@ section .text
 _start:
     mov eax, 0
       
-    dec eax               ; Decrements EAX by 1
+    or eax, 0xFF          ; Performs bitwise OR on EAX with 0xFF
       
-    and eax, 0xFF         ; Performs bitwise AND on EAX with 0xFF
+    neg eax               ; Negates the value in EAX (two's complement negation)
       
-    xor eax, 0xFF         ; Performs bitwise XOR on EAX with 0xFF
+    neg eax               ; Negates the value in EAX (two's complement negation)
       
-    sub eax, 5            ; Subtracts 5 from EAX
+    neg eax               ; Negates the value in EAX (two's complement negation)
       
-    and eax, 0xFF         ; Performs bitwise AND on EAX with 0xFF
+    inc eax               ; Increments EAX by 1
     mov ebx, data       ; Get the address of the .data section
     mov [ebx], eax      ; Store the value of EAX at .data
     mov eax, 4          ; System call number for 'write'
