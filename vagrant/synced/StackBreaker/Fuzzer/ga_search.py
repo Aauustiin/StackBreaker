@@ -24,7 +24,6 @@ def assess(pop: list, target: list[int]):
         print(f'Assessing {i+1} of {len(pop)}...', end='\r')
         score = binary_spy.score(bytes(individual['solution'], 'utf-8'), target)
         pop[i]['fitness'] = score
-        if score == 1: print('\nfound')
     ret = sorted(pop, key=lambda i: i['fitness'], reverse=True)
     
     return ret
