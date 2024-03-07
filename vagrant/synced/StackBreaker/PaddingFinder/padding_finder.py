@@ -30,12 +30,12 @@ def getPaddingLength(program:Path, verbose=False) -> List[int]:
 
         for bp in el[1]:
 
-            if verbose: print(f'    Trrying breakpoint {el[1]}...')
+            if verbose: print(f'    Trying breakpoint {el[1]}...')
 
             padLength = pad.search(bp)
             if padLength > 0: 
                 paddings.append(padLength)
-                if verbose: print(f'    Found paddin of length {padLength}')
+                if verbose: print(f'    Found padding of length {padLength}')
             elif verbose:
                 print('    Could not find padding')
 

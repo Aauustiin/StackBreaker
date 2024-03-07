@@ -5,13 +5,14 @@ from GPTCompiler.Shell_coder import generate_shellcode_chain
 
 call_count = 0
 
-def main(padding, out_rop_path):
+def main(padding, out_rop_path, api_key, target):
     checkcounter = 0
     for _ in range(1):
         eax = asm_generator.assembly_generator("GPTCompiler/eax.s")
-        rop_file = generate_shellcode_chain(padding, out_rop_path, "GPTCompiler/eax.s")
+        rop_file = generate_shellcode_chain(padding, out_rop_path, "GPTCompiler/eax.s", api_key)
+        command = "./" + str(target) + " " + str(rop_file)
 
-        output, error = run_command('./vuln3-32 ' + rop_file)  # Replace 'ls' with your command
+        output, error = run_command(command)
         print("Output:", output)
         print("Error:", error if error else "No Error") 
         check = checkoutput(eax,output)
@@ -26,7 +27,7 @@ def checkoutput(eax,output):
     # Increment the counter each time the function is called
     call_count += 1
 
-    if str(eax) in output:
+    if chr(eax) in output:
         check = True
         return check
     else:

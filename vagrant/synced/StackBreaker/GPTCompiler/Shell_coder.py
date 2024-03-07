@@ -18,7 +18,7 @@ parser.add_argument("--shellcode", default="try.s")
 parser.add_argument("--out-rop-path", default="../out-rop.txt")
 
 
-def generate_shellcode_chain(padding, out_rop_path, shellcode):
+def generate_shellcode_chain(padding, out_rop_path, shellcode, api_key):
     gadgets, data_address = parse_out_rop(Path(out_rop_path))
     gadgets = removeNone(gadgets)
     rop_chain = b'A' * padding
@@ -30,7 +30,7 @@ def generate_shellcode_chain(padding, out_rop_path, shellcode):
 
     with open(out_rop_path, 'r') as file:
         gpt_gadgets = file.read()
-    gpt_compiler = GPTCompiler(gpt_gadgets, "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")
+    gpt_compiler = GPTCompiler(gpt_gadgets, api_key)
 
     rop_chain, register_info = readinstructions(gpt_compiler, shellcode, data_address, data_values,
                                                 label_address_map, rop_chain, gadgets, null)

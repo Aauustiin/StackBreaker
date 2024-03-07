@@ -8,7 +8,6 @@ def pack_chain(gpt_gadgets):
     for gadget in rop_chain:
         p += pack_gadget(gadget)
 
-    print(p)  # Print the packed ROP chain
     return p
 
 def form_chain(gpt_gadgets):
@@ -30,5 +29,4 @@ def form_chain(gpt_gadgets):
     
 def pack_gadget(gadget):
     gadget_int = int(gadget, 16)
-    print(gadget_int)
     return struct.pack('<I', gadget_int) 

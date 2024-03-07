@@ -3,6 +3,7 @@ global _start
   section .text
   _start:
 	  mov ebx, filename
+    neg ecx
 	  mov ecx, argv
 	  xor edx, edx
 	  mov eax, 11

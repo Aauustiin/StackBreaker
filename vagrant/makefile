@@ -1,4 +1,4 @@
 setup:
-	python setup_host.py
+	python3 setup_host.py
 	vagrant up
 	vagrant provision

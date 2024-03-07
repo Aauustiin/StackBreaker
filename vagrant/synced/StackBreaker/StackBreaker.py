@@ -40,7 +40,7 @@ parser.add_argument("--input", default=None, type=str)
 
 parser.add_argument("--assembly", default=False, type=bool)
 
-parser.add_argument("--api-key", default="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", type=str)
+parser.add_argument("--api-key", default="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", type=str)
 
 parser.add_argument("--gpt", default=False, type=bool)
 parser.add_argument("--gpt-assembly", default=False, type=bool)
@@ -119,7 +119,7 @@ def main(args):
 
     if args.test:
         print("Starting testing...")
-        succ, fail = compile_test(padding, args.out_rop_path)
+        succ, fail = compile_test(padding, args.out_rop_path, args.api_key, args.program)
         print("Testing completed!")
         print("Success Rate: " + str(succ))
         print("Failure Rate: " + str(fail))
@@ -144,14 +144,12 @@ def main(args):
             sys.exit()
         with open(args.out_rop_path, 'r') as file:
             gadgets = file.read()
-            exploit_path = gpt_compile(gadgets, args.input, "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", padding)
+            exploit_path = gpt_compile(gadgets, args.input, args.api_key, padding)
     elif args.gpt_assembly:
         if args.input is None:
             print("Error: Missing input, provide a path to a file with python StackBreaker.py --input=<PATH>")
             sys.exit()
-        # with open(args.input, 'r') as input_file:
-        #     shellcode = input_file.read()
-        exploit_path = gpt_shellcode_gen(padding, args.out_rop_path, args.input)
+        exploit_path = gpt_shellcode_gen(padding, args.out_rop_path, args.input, args.api_key)
 
     if args.end_to_end:
         if exploit_path is None:

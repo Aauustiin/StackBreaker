@@ -10,6 +10,9 @@ class GPTCompiler:
         self.client = OpenAI(api_key=api_key)
 
     def compile_line(self, line: str, context: str):
+
+        transcript = StringIO()
+
         # WARN ABOUT SIDE EFFECTS BREAKING THINGS
 
         completion = self.client.chat.completions.create(
@@ -23,7 +26,12 @@ class GPTCompiler:
             temperature=0
         )
 
+        transcript.write("The following assembly program is being compiled into ROP gadgets:\n\n" + context + "\n\nWhen compiling the line:\n\n" + line + "\n\nWhat side effects must be avoided in order to maintain program correctness in this specific case?\n")
+
         response = completion.choices[0].message.content
+
+        transcript.write(response)
+        transcript.write('\n')
         print(response)
 
         # GENERATE SOLUTION FROM ROP GADGETS
@@ -33,6 +41,8 @@ class GPTCompiler:
         keyword_gadgets = keyword_trim(self.gadgets, tokens)
 
         prompt = "Use the provided gadgets to create a ROP chain that executes the following line of assembly\n\n" + line + "\n\n" + response + "\n\nAccomplish this task by following these steps:\n\n1. Identify 5 different gadgets that could be used to accomplish the task.\n\n2. Come up with 3 different potential solutions.\n\n3. Evaluate the correctness and simplicity of your solutions and decide upon the best one" + "\n\nGadgets:\n\n" + keyword_gadgets + "\n\n"
+        transcript.write(prompt)
+        transcript.write('\n')
 
         completion = self.client.chat.completions.create(
             model="gpt-4-1106-preview",
@@ -46,6 +56,8 @@ class GPTCompiler:
 
         response = completion.choices[0].message.content
         print(response)
+        transcript.write(response)
+        transcript.write('\n')
 
         # FORMAT ANSWER CORRECTLY
 
@@ -60,8 +72,12 @@ class GPTCompiler:
             temperature=0
         )
 
+        transcript.write("The following is a description of a ROP chain:\n\n" + response + "\n\nExtract the rop chain from this description and write it out between two curly braces, with each gadget separated by a newline. For example:\n\n{\nGadget\nGadget\nGadget\n}\n")
+
         response = completion.choices[0].message.content
         print(response)
+        transcript.write(response)
+        transcript.write('\n')
 
         # REMOVE DUMMY VALUES
 
@@ -76,8 +92,15 @@ class GPTCompiler:
             temperature=0
         )
 
+        transcript.write("Fill in any missing values in:\n\n" + response + "\n\nWith arbitrarily chosen values. If there are no missing values, then repeat the input.\n")
+
         response = completion.choices[0].message.content
         print(response)
+        transcript.write(response)
+        transcript.write('\n')
+
+        with open("transcript.txt", 'w') as out_transcript:
+            out_transcript.write(transcript.getvalue())
 
         copy = False
         buffer = StringIO()
@@ -93,7 +116,6 @@ class GPTCompiler:
         lines = buffer.splitlines()
 
         buffer = [line.split()[0] for line in lines]
-        print(buffer)
         rop_chain = pack_chain(buffer)
 
         return rop_chain
